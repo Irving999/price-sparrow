@@ -47,6 +47,43 @@ const postRegister = async (req, res, next) => {
     }
 }
 
+const postLogin = async (req, res, next) => {
+    try {
+        const { email, password } = req.body
+
+        if (!email || !password) {
+            return res.status(400).json({
+                error: "Email or password fields cannot be empty"
+            })
+        }
+
+        const { rows } = await db.query(
+            `SELECT email, password FROM users
+             WHERE email = $1`,
+             [email.toLowerCase()]
+        )
+
+        const user = rows[0]
+
+        const DUMMY_HASH = '$2b$12$0yFCIvOyFvaLLI0QG4vpxOdW3WDJ1hg6BoGJgAT65xWJC8L/6B.36'
+        const hash = user ? user.password : DUMMY_HASH
+        const isMatch = await bcrypt.compare(password, hash)
+
+        if (!user || !isMatch) {
+            return res.status(400).json({ error: 'Invalid credentials' })
+        }
+
+        res.status(200).json({
+            message: 'Logged in successfully',
+            user: user.email
+        })
+    } catch (err) {
+        console.error('Login err:', err)
+        next(err)
+    }
+}
+
 module.exports = {
-    postRegister
+    postRegister,
+    postLogin
 }

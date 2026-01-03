@@ -1,5 +1,4 @@
 const pool = require('../../db')
-const { get } = require('../routers/auth.router')
 
 function isValidUrl(str) {
     try {
@@ -152,7 +151,7 @@ const deleteWatch = async (req, res, next) => {
         const watchId = Number(req.params.watchId)
 
         if (!Number.isInteger(watchId) || watchId <= 0) {
-            return res.status(404).json({ error: "Invalid watchId." });
+            return res.status(400).json({ error: "Invalid watchId." });
         }
 
         const { rowCount } = await pool.query(
@@ -164,7 +163,7 @@ const deleteWatch = async (req, res, next) => {
             , [watchId, userId]
         )
 
-        if (!rowCount) return res.status(400).json({ error: 'Watch not found' })
+        if (!rowCount) return res.status(404).json({ error: 'Watch not found' })
 
         res.json({ message: 'Product removed succesfully', watchId })
     } catch (err) {

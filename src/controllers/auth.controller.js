@@ -1,5 +1,16 @@
+require('dotenv').config()
+
+const jwt = require('jsonwebtoken')
 const db = require('../../db')
 const bcrypt = require('bcrypt')
+
+function signToken(userId) {
+    return jwt.sign(
+        { userId: userId },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+    )
+}
 
 const postRegister = async (req, res, next) => {
     try {
@@ -27,12 +38,11 @@ const postRegister = async (req, res, next) => {
         )
 
         const newUser = result.rows[0]
+        const accessToken = signToken(user.id)
         
         res.status(201).json({
             message: 'User successfully created',
-            user: {
-                email: newUser.email,
-            }
+            accessToken
         })
     } catch (err) {
         console.error(err)
@@ -73,9 +83,11 @@ const postLogin = async (req, res, next) => {
             return res.status(400).json({ error: 'Invalid credentials' })
         }
 
-        res.status(200).json({
+        const accessToken = signToken(user.id)
+        
+        res.status(201).json({
             message: 'Logged in successfully',
-            user: user.email
+            accessToken
         })
     } catch (err) {
         console.error('Login err:', err)

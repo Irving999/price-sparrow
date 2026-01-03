@@ -48,8 +48,6 @@ const postRegister = async (req, res, next) => {
             accessToken
         })
     } catch (err) {
-        console.error(err)
-
         // Email already exists (unique constraint violation)
         if (err.code === '23505') {
             return res.status(400).json({
@@ -93,7 +91,6 @@ const postLogin = async (req, res, next) => {
             accessToken
         })
     } catch (err) {
-        console.error('Login err:', err)
         next(err)
     }
 }

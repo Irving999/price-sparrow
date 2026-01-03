@@ -5,5 +5,6 @@ const router = express.Router()
 
 router.get('/watches', requireAuth, controller.getWatches)
 router.post('/watches', requireAuth, controller.postWatches)
+router.post('/watches/:watchId', requireAuth, controller.deleteWatch)
 
 module.exports = router

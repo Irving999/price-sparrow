@@ -36,7 +36,6 @@ const getWatches = async (req, res, next) => {
         )
         res.json(rows)
     } catch (err) {
-        console.error(err)
         next(err)
     }
 }
@@ -118,7 +117,34 @@ const postWatches = async (req, res, next) => {
     }
 }
 
+const deleteWatch = async (req, res, next) => {
+    try {
+        const userId = req.userId
+        const watchId = Number(req.params.watchId)
+
+        if (!Number.isInteger(watchId) || watchId <= 0) {
+            return res.status(404).json({ error: "Invalid watchId." });
+        }
+
+        const { rowCount } = await pool.query(
+            `
+            DELETE FROM watches
+            WHERE id = $1
+            AND user_id = $2
+            `
+            , [watchId, userId]
+        )
+
+        if (!rowCount) return res.status(400).json({ error: 'Watch not found' })
+
+        res.json({ message: 'Product removed succesfully', watchId })
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     getWatches,
-    postWatches
+    postWatches,
+    deleteWatch
 }

@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 const jwt = require('jsonwebtoken')
-const db = require('../../db')
+const pool = require('../../db')
 const bcrypt = require('bcrypt')
 
 function signToken(userId) {
@@ -31,14 +31,17 @@ const postRegister = async (req, res, next) => {
         const password_hash = await bcrypt.hash(password, 10)
 
         // Insert user
-        const result = await db.query(
-            `INSERT INTO users (email, password)
-             VALUES ($1, $2)
-             RETURNING id, email`, [email, password_hash]
+        const result = await pool.query(
+            `
+            INSERT INTO users (email, password)
+            VALUES ($1, $2)
+            RETURNING id, email
+            `,
+            [email, password_hash]
         )
 
         const newUser = result.rows[0]
-        const accessToken = signToken(user.id)
+        const accessToken = signToken(newUser.id)
         
         res.status(201).json({
             message: 'User successfully created',
@@ -67,8 +70,8 @@ const postLogin = async (req, res, next) => {
             })
         }
 
-        const { rows } = await db.query(
-            `SELECT email, password FROM users
+        const { rows } = await pool.query(
+            `SELECT id, email, password FROM users
              WHERE email = $1`,
              [email.toLowerCase()]
         )

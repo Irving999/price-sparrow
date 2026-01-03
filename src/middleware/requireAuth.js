@@ -9,6 +9,7 @@ module.exports = function requireAuth(req, res, next) {
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET)
         req.userId = payload.userId
+        console.log(payload.userId)
         next()
     } catch (err) {
         return res.status(403).json({ error: 'Invalid or expires token' })

@@ -1,4 +1,5 @@
 const pool = require('../../db')
+const { get } = require('../routers/auth.router')
 
 function isValidUrl(str) {
     try {
@@ -6,6 +7,33 @@ function isValidUrl(str) {
         return u.protocol === 'http:' || u.protocol === 'https:'
     } catch {
         return false
+    }
+}
+
+const getMe = async (req, res, next) => {
+    try {
+        const userId = req.userId
+
+        const { rows } = await pool.query(
+            `
+            SELECT id, email FROM users
+            WHERE id = $1
+            `
+            , [userId]
+        )
+
+        const user = rows[0]
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" })
+        }
+
+        res.json({
+            id: user.id,
+            email: user.email
+        })
+    } catch (err) {
+        next(err)
     }
 }
 
@@ -41,8 +69,9 @@ const getWatches = async (req, res, next) => {
 }
 
 const postWatches = async (req, res, next) => {
-    const client = await pool.connect()
+    let client
     try {
+        client = await pool.connect()
         const userId = req.userId
         const { url, targetPrice } = req.body
 
@@ -146,5 +175,6 @@ const deleteWatch = async (req, res, next) => {
 module.exports = {
     getWatches,
     postWatches,
-    deleteWatch
+    deleteWatch,
+    getMe
 }

@@ -9,6 +9,38 @@ function isValidUrl(str) {
     }
 }
 
+const getWatches = async (req, res, next) => {
+    try {
+        const userId = req.userId
+
+        const { rows } = await pool.query(
+            `
+            SELECT
+                w.id AS "watchId",
+                w.target_price AS "targetPrice",
+                w.created_at AS "watchedAt",
+                json_build_object(
+                'id', p.id,
+                'url', p.url,
+                'title', p.title,
+                'currentPrice', p.current_price,
+                'currency', p.currency,
+                'lastCheckedAt', p.last_checked_at
+                ) AS product
+            FROM watches w
+            JOIN products p ON p.id = w.product_id
+            WHERE w.user_id = $1
+            ORDER BY w.created_at DESC
+            `,
+            [userId]
+        )
+        res.json(rows)
+    } catch (err) {
+        console.error(err)
+        next(err)
+    }
+}
+
 const postWatches = async (req, res, next) => {
     const client = await pool.connect()
     try {
@@ -87,5 +119,6 @@ const postWatches = async (req, res, next) => {
 }
 
 module.exports = {
+    getWatches,
     postWatches
 }

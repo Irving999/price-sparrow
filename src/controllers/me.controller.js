@@ -165,7 +165,7 @@ const deleteWatch = async (req, res, next) => {
 
         if (!rowCount) return res.status(404).json({ error: 'Watch not found' })
 
-        res.json({ message: 'Product removed succesfully', watchId })
+        res.json({ message: 'Product removed successfully', watchId })
     } catch (err) {
         next(err)
     }

@@ -86,7 +86,7 @@ const postLogin = async (req, res, next) => {
 
         const accessToken = signToken(user.id)
         
-        res.status(201).json({
+        res.status(200).json({
             message: 'Logged in successfully',
             accessToken
         })

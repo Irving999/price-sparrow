@@ -60,21 +60,21 @@ const getWatchersCount = async (req, res, next) => {
 }
 
 const updatePrice = async (req, res, next) => {
+    const productId = Number(req.params.id)
+    if (!Number.isInteger(productId) || productId <= 0) {
+        return res.status(400).json({ error: 'Invalid productId' })
+    }
+
+    const { currentPrice, currency } = req.body
+
+    const priceNum = Number(currentPrice)
+    if (!Number.isFinite(priceNum) || priceNum < 0) {
+        return res.status(400).json({ error: 'Invalid price' })
+    }
+    
     let client
     try {
         client = await pool.connect()
-
-        const productId = Number(req.params.id)
-        if (!Number.isInteger(productId) || productId <= 0) {
-            return res.status(400).json({ error: 'Invalid productId' })
-        }
-
-        const { currentPrice, currency } = req.body
-        const priceNum = Number(currentPrice)
-        if (!Number.isFinite(priceNum) || priceNum < 0) {
-            return res.status(400).json({ error: 'Invalid price' })
-        }
-
         await client.query('BEGIN')
 
         const updatedResult = await client.query(
@@ -101,6 +101,13 @@ const updatePrice = async (req, res, next) => {
         }
         
         const product = updatedResult.rows[0]
+
+        await client.query(
+            `
+            INSERT INTO price_history (product_id, price) VALUES ($1, $2)
+            `,
+            [productId, priceNum]
+        )
 
         const matchesResult = await client.query(
             `

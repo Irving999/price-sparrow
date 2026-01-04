@@ -4,5 +4,6 @@ const controller = require('../controllers/products.controller')
 const router = express.Router()
 
 router.get('/:id', controller.getProduct)
+router.get('/:id/watchers', controller.getWatchersCount)
 
 module.exports = router

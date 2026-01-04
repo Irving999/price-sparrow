@@ -32,6 +32,34 @@ const getProduct = async (req, res, next) => {
     }
 }
 
+const getWatchersCount = async (req, res, next) => {
+    try {
+        const productId = Number(req.params.id)
+        if (!Number.isInteger(productId) || productId <= 0) {
+            return res.status(400).json({ error: "Invalid productId"})
+        }
+
+        const productCheck = await pool.query(`SELECT 1 FROM products WHERE id = $1`, [productId])
+        if (productCheck.rowCount === 0) {
+            return res.status(404).json({ error: "Product not found." })
+        }
+
+        const { rows } = await pool.query(
+            `
+            SELECT COUNT(*)::int AS "watchersCount"
+            FROM watches
+            WHERE product_id = $1
+            `,
+            [productId]
+        )
+        
+        res.json({ productId, watchersCount: rows[0].watchersCount });
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
-    getProduct
+    getProduct,
+    getWatchersCount
 }

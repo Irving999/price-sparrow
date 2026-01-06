@@ -1,9 +1,19 @@
+const sites = require('./config')
 const { chromium } = require('playwright-extra')
 const stealth = require('puppeteer-extra-plugin-stealth')()
 
 chromium.use(stealth)
 
 module.exports = async (url) => {
+    // Identify store
+    let site
+    for (const s in sites) {
+        if (url.includes(s)) {
+            site = sites[s]
+            break
+        }
+    }
+
     let browser
     try {
         browser = await chromium.launch({ headless: true })
@@ -18,12 +28,13 @@ module.exports = async (url) => {
 
         await page.goto(url, { waitUntil: 'commit' })
 
-        const titleLocator = page.locator('h1')
+        const titleLocator = page.locator('h1').first()
         await titleLocator.waitFor({ state: 'attached' })
-
         const title = await titleLocator.innerText()
         
-        const price = await page.getByTestId('price-block-customer-price').innerText()
+        const priceLocator = page.locator(site[0]).first()
+        await priceLocator.waitFor({ state: 'attached' })
+        const price = await priceLocator.innerText()
         const cleanPrice = price.replace(/[$,]/g, '')
 
         if (!title || !price) {

@@ -1,4 +1,5 @@
 require('dotenv').config()
+const scraper = require('../services/scraper')
 
 const pool = require('../../db')
 
@@ -60,20 +61,25 @@ const getWatchersCount = async (req, res, next) => {
 }
 
 const updatePrice = async (req, res, next) => {
-    const productId = Number(req.params.id)
-    if (!Number.isInteger(productId) || productId <= 0) {
-        return res.status(400).json({ error: 'Invalid productId' })
-    }
-
-    const { currentPrice, currency } = req.body
-
-    const priceNum = Number(currentPrice)
-    if (!Number.isFinite(priceNum) || priceNum < 0) {
-        return res.status(400).json({ error: 'Invalid price' })
-    }
-    
     let client
     try {
+        // Validate product id
+        const productId = Number(req.params.id)
+        if (!Number.isInteger(productId) || productId <= 0) {
+            return res.status(400).json({ error: 'Invalid productId' })
+        }
+
+        // Get product from db
+        const result = await pool.query('SELECT url FROM products WHERE id = $1', [productId])
+        if (!result.rowCount) return res.status(404).json({ error: 'Product does not exist' })
+        const url = result.rows[0].url
+
+        // Scrape product
+        const { title, price, currency } = await scraper(url)
+        if (!title || !currency || !Number.isFinite(price) || price < 0) {
+            return res.status(400).json({ error: 'Invalid input' })
+        }
+        
         client = await pool.connect()
         await client.query('BEGIN')
 
@@ -81,10 +87,12 @@ const updatePrice = async (req, res, next) => {
             `
             UPDATE products
             SET 
-                current_price = $1,
-                currency = $2,
+                title = $1,
+                current_price = $2,
+                currency = $3,
                 last_checked_at = NOW()
-            WHERE id = $3
+            WHERE id = $4
+            AND current_price IS DISTINCT FROM $2
             RETURNING
                 id,
                 url,
@@ -92,45 +100,41 @@ const updatePrice = async (req, res, next) => {
                 currency,
                 last_checked_at AS "lastCheckedAt"
             `,
-            [priceNum, currency, productId]
+            [title, price, currency, productId]
         )
 
+        // If product price has not changed return
         if (!updatedResult.rowCount) {
             await client.query('ROLLBACK')
-            return res.status(404).json({ error: 'Product does not exist' })
+            return res.status(200).json({ status: 'no_change', message: 'Price has not changed' })
         }
-        
+
         const product = updatedResult.rows[0]
 
-        await client.query(
-            `
-            INSERT INTO price_history (product_id, price) VALUES ($1, $2)
-            `,
-            [productId, priceNum]
+        await client.query(`INSERT INTO price_history (product_id, price) VALUES ($1, $2)`,
+            [productId, price]
         )
 
-        const matchesResult = await client.query(
+        const matches = await client.query(
             `
-            SELECT
-                w.id AS "watchId",
-                w.user_id AS "userId",
-                w.target_price AS "targetPrice",
-                w.created_at AS "watchedAt"
+            INSERT INTO alert_watches(watch_id, triggered_price)
+            SELECT w.id, $2
             FROM watches w
             WHERE w.product_id = $1
                 AND w.target_price IS NOT NULL
                 AND $2 <= w.target_price
-            ORDER BY w.created_at ASC
+            ON CONFLICT (watch_id, triggered_price) DO NOTHING
+            RETURNING watch_id
             `,
-            [productId, priceNum]
+            [product.id, price]
         )
 
         await client.query('COMMIT')
 
         res.json({
             product,
-            matches: matchesResult.rows,
-            matchesCount: matchesResult.rows.length
+            matchesCount: matches.rowCount,
+            alertedWatches: matches.rows.map(r => r.watch_id)
         })
     } catch (err) {
         try { await client.query('ROLLBACK') } catch(_) {}

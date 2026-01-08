@@ -1,10 +1,10 @@
-const sites = require('./config')
+const sites = require('./sites')
 const { chromium } = require('playwright-extra')
 const stealth = require('puppeteer-extra-plugin-stealth')()
 
 chromium.use(stealth)
 
-module.exports = async (url) => {
+async function scrape(url) {
     // Identify store
     let site
     for (const s in sites) {
@@ -28,14 +28,14 @@ module.exports = async (url) => {
 
         await page.goto(url, { waitUntil: 'commit' })
 
-        const titleLocator = page.locator('h1').first()
+        const titleLocator = page.locator(site.title).first()
         await titleLocator.waitFor({ state: 'attached' })
         const title = await titleLocator.innerText()
         
-        const priceLocator = page.locator(site[0]).first()
+        const priceLocator = page.locator(site.price).first()
         await priceLocator.waitFor({ state: 'attached' })
         const price = await priceLocator.innerText()
-        const cleanPrice = price.replace(/[$,]/g, '')
+        const cleanPrice = Number(price.replace(/[$,]/g, ''))
 
         if (!title || !price) {
             throw new Error('Failed to extract product data')

@@ -1,6 +1,4 @@
-require('dotenv').config()
 const scraper = require('../services/scraper')
-
 const pool = require('../../db')
 
 const getProduct = async (req, res, next) => {

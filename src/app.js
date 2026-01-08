@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const express = require('express')
 const app = express()
 
@@ -6,6 +8,7 @@ app.use(express.json())
 app.use('/api/auth', require('./routers/auth.router'))
 app.use('/api/me', require('./routers/me.router'))
 app.use('/api/products', require('./routers/products.router'))
+app.use('/api/alerts', require('./routers/alerts.router'))
 
 // Error handling
 app.use((req, res) => {

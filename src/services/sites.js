@@ -1,22 +1,25 @@
 module.exports = {
     bestbuy: {
-        title: 'h1.h4',
-        price: '[data-lu-target="customer_price"]'
+        titles: ['h1.h4'],
+        prices: ['[data-lu-target="customer_price"]']
     },
     amazon: {
-        title: '#product-title',
-        price: '.a-offscreen'
+        titles: ['#productTitle'],
+        prices: ['.a-offscreen']
     },
     target: {
-        title: '[data-test="productTitle"]',
-        price: '[data-test="product-price"]'
+        titles: [
+            '[data-test="productTitle"]',
+            '[data-test="product-title"]'
+        ],
+        prices: ['[data-test="product-price"]']
     },
     walmart: {
-        title: '[itemprop="name"]',
-        price: '[data-testid="price-wrap"]'
+        titles: ['[itemprop="name"]'],
+        prices: ['[data-testid="price-wrap"]']
     },
     macys: {
-        title: '.product-title span.body',
-        price: 'span[aria-label^="Current Price"]'
+        titles: ['.product-title span.body'],
+        prices: ['span[aria-label^="Current Price"]']
     }
-}
+};

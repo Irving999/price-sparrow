@@ -4,15 +4,10 @@ const stealth = require('puppeteer-extra-plugin-stealth')()
 
 chromium.use(stealth)
 
-async function scrape(url) {
+module.exports = scrape = async(url) => {
     // Identify store
-    let site
-    for (const s in sites) {
-        if (url.includes(s)) {
-            site = sites[s]
-            break
-        }
-    }
+    const siteKey = Object.keys(sites).find(key => url.includes(key))
+    const site = sites[siteKey]
 
     let browser
     try {
@@ -26,29 +21,38 @@ async function scrape(url) {
 
         const page = await context.newPage()
 
-        await page.goto(url, { waitUntil: 'commit' })
+        await page.goto(url, { waitUntil: 'domcontentloaded' })
 
-        const titleLocator = page.locator(site.title).first()
-        await titleLocator.waitFor({ state: 'attached' })
-        const title = await titleLocator.innerText()
-        
-        const priceLocator = page.locator(site.price).first()
-        await priceLocator.waitFor({ state: 'attached' })
-        const price = await priceLocator.innerText()
-        const cleanPrice = Number(price.replace(/[$,]/g, ''))
-
-        if (!title || !price) {
-            throw new Error('Failed to extract product data')
+        const trySelectors = async (selectors) => {
+            for (const selector of selectors) {
+                const loc = page.locator(selector).first()
+                try {
+                    await loc.waitFor({ state: 'visible', timeout: 3000 })
+                    return loc
+                } catch { continue }
+            }
+            return null
         }
 
-        const data = {
+        const titleLoc = await trySelectors(site.titles)
+        const priceLoc = await trySelectors(site.prices)
+
+        if (!titleLoc || !priceLoc) {
+            throw new Error('Failed to locate elements')
+        }
+
+        const title = (await titleLoc.innerText()).trim()
+        const priceRaw = await priceLoc.innerText()
+
+        const priceClean = Number(priceRaw.replace(/[^0-9.-]+/g, ""))
+
+        return {
             title,
-            price: cleanPrice,
+            price: priceClean,
             currency: 'USD'
         }
-        return data
     } catch (err) {
-        console.error('BestBuy scrape error:', err)
+        console.error(`Scrape Failed for ${url}:`, err.message)
         return null
     } finally {
         if (browser) await browser.close()

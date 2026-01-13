@@ -1,4 +1,5 @@
 const pool = require('../../db')
+const sendEmail = require('./email.service')
 
 const updateProductPrice = async ({ productId, title, price, currency }) => {
     const client = await pool.connect()
@@ -47,6 +48,21 @@ const updateProductPrice = async ({ productId, title, price, currency }) => {
             RETURNING watch_id`,
             [product.id, price]
         )
+
+        for (const match of matches.rows) {
+            const { rows: userRows } = await client.query(
+                'SELECT email FROM users WHERE id = $1',
+                [match.userId]
+            )
+            const userEmail = userRows[0]?.email;
+            if (!userEmail) continue;
+
+            await sendEmail(
+                userEmail,
+                `Price Alert: ${product.title}`,
+                `The price of ${product.title} has dropped to ${product.currentPrice} ${product.currency}!\nCheck it here: ${product.url}`
+            )
+        }
         
         await client.query('COMMIT')
         

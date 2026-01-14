@@ -1,7 +1,13 @@
 import { useState } from "react"
+import { useNavigate, Navigate } from "react-router-dom"
 
 export default function Login() {
     const [formInput, setFormInput] = useState({ email: "", password: "" })
+    const [message, setMessage] = useState({ success: "", error: ""})
+    const navigate = useNavigate()
+    const token = localStorage.getItem("token")
+
+    if (token) return <Navigate to="/dashboard" />
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -13,6 +19,7 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setMessage({ error: "", success:  "" })
 
         try {
             const res = await fetch("http://localhost:3000/api/auth/login", {
@@ -24,9 +31,16 @@ export default function Login() {
             })
 
             const data = await res.json()
-            console.log(data)
+
+            if (res.ok) {
+                setMessage({ success: data.message, error: "" })
+                localStorage.setItem("token", data.accessToken)
+                navigate("/dashboard")
+            } else {
+                setMessage({ error: data.error || "Login failed", success: "" })
+            }
         } catch (error) {
-            console.error("Server error", error)
+            setMessage({ error: "Network error", success: "" })
         }
     }
 
@@ -34,6 +48,8 @@ export default function Login() {
         <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-gray-200">
             <div className="flex flex-col items-center bg-white rounded-xl p-10">
                 <h1 className="font-semibold mb-5 text-2xl text-slate-900">Log in</h1>
+                {message.error && <p className="text-red-500">{message.error}</p>}
+                {message.success && <p className="text-green-500">{message.success}</p>}
                 <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3">
                     <label htmlFor="email" className="flex flex-col gap-2">
                         Email

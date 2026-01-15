@@ -3,6 +3,7 @@ import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
+import Watches from "./pages/Watches"
 
 function App() {
   return (
@@ -13,6 +14,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-watches"
+          element={
+            <ProtectedRoute>
+              <Watches />
             </ProtectedRoute>
           }
         />

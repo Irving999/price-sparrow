@@ -1,5 +1,57 @@
+import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
+
 export default function Watches() {
+    const [watches, setWatches] = useState([])
+    const navigate = useNavigate()
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+        navigate("/login")
+    }
+
+    useEffect(() => {
+        async function getWatches() {
+            try {
+                const response = await fetch("http://localhost:3000/api/me/watches", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
+
+                const data = await response.json()
+                setWatches(data)
+            } catch (error) {
+                console.error("Server error: ", error)
+            }
+        }
+        getWatches()
+    }, [])
+
     return (
-        <h1>My watches</h1>
+        <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <div className="mx-24">
+                <h1 className="font-semibold mt-4 text-2xl text-slate-900">Your Watches</h1>
+                <ul className="flex flex-col ml-8 mt-4">
+                    {watches && watches.map((item) => {
+                        return (
+                            <li key={item.product.id} className="mb-2">
+                                <a
+                                    href={item.product.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block py-4 px-4 font-semibold bg-white shadow-sm hover:underline hover:underline-offset cursor-pointer rounded-lg">
+                                        {item.product.title || "product"}
+                                </a>
+                            </li>
+                        )
+                    })}
+                </ul>
+            </div>
+        </div>
     )
 }

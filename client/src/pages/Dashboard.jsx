@@ -54,46 +54,44 @@ export default function Dashboard() {
     }
 
     return (
-        <>
-            <div className="flex min-h-screen flex-col">
-                <Navbar />
-                <div className="flex flex-1 flex-col justify-center items-center">
-                    <h1 className="font-semibold mb-5 text-2xl text-slate-900">Enter a new product</h1>
-                    <div>
-                        <form action="" className="flex gap-3" onSubmit={handleSubmit}>
-                            <input
-                                type="text"
-                                name="url"
-                                id="url"
-                                placeholder="Enter url"
-                                value={url}
-                                onChange={(e) => setUrl(e.target.value)}
-                                className="px-3 py-1 rounded-xl border-transparent focus:ring focus:ring-sky-500 focus:ring-opacity-50 focus:ring-2 shadow-lg outline outline-black/5"
-                            />
-                            <input
-                                type="number"
-                                name="price"
-                                id="price"
-                                placeholder="Enter price"
-                                value={price}
-                                onChange={(e) => setPrice(e.target.value)}
-                                className="px-3 py-1 rounded-xl border-transparent focus:ring focus:ring-sky-500 focus:ring-opacity-50 focus:ring-2 shadow-lg outline outline-black/5"
-                            />
-                            <button
-                                className="text-white bg-sky-500 hover:bg-sky-700 py-1 px-3 rounded-xl cursor-pointer"
-                                type="submit"
-                                disabled={loading}
-                            >
-                                {loading ? "Adding..." : "Add Product"}
-                            </button>
-                        </form>
-                        <div className="w-fit mx-auto">
-                            {success && <p className="text-green-500">{success}</p>}
-                            {error && <p className="text-red-500">{error}</p>}
-                        </div>
+        <div className="flex min-h-screen flex-col">
+            <Navbar />
+            <div className="flex flex-1 flex-col justify-center items-center">
+                <h1 className="font-semibold mb-5 text-2xl text-slate-900">Enter a new product</h1>
+                <div>
+                    <form action="" className="flex gap-3" onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            name="url"
+                            id="url"
+                            placeholder="Enter url"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            className="px-3 py-1 rounded-xl border-transparent focus:ring focus:ring-sky-500 focus:ring-opacity-50 focus:ring-2 shadow-lg outline outline-black/5"
+                        />
+                        <input
+                            type="number"
+                            name="price"
+                            id="price"
+                            placeholder="Enter price"
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                            className="px-3 py-1 rounded-xl border-transparent focus:ring focus:ring-sky-500 focus:ring-opacity-50 focus:ring-2 shadow-lg outline outline-black/5"
+                        />
+                        <button
+                            className="text-white bg-sky-500 hover:bg-sky-700 py-1 px-3 rounded-xl cursor-pointer"
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading ? "Adding..." : "Add Product"}
+                        </button>
+                    </form>
+                    <div className="w-fit mx-auto">
+                        {success && <p className="text-green-500">{success}</p>}
+                        {error && <p className="text-red-500">{error}</p>}
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     )
 }

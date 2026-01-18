@@ -1,18 +1,24 @@
 module.exports = {
     bestbuy: {
         titles: ['h1.h4'],
-        prices: ['[data-lu-target="customer_price"]']
+        prices: ['[data-lu-target="customer_price"]'],
+        gallery: '.VJYXIrZT4D0Zj6vQ',
+        images: 'img',
     },
     amazon: {
         titles: ['#productTitle'],
-        prices: ['.a-offscreen']
+        prices: ['.a-offscreen'],
+        gallery: '#main-image-container',
+        images: '.image.item img'
     },
     target: {
         titles: [
             '[data-test="productTitle"]',
             '[data-test="product-title"]'
         ],
-        prices: ['[data-test="product-price"]']
+        prices: ['[data-test="product-price"]'],
+        gallery: '[data-module-type="ProductDetailImageGallery"]',
+        images: '[data-test^="image-gallery-item-"] img'
     },
     walmart: {
         titles: ['[itemprop="name"]'],
@@ -20,6 +26,8 @@ module.exports = {
     },
     macys: {
         titles: ['.product-title span.body'],
-        prices: ['span[aria-label^="Current Price"]']
+        prices: ['span[aria-label^="Current Price"]'],
+        gallery: '[aria-label="slideshow"]',
+        images: 'source[media="(min-width: 1024px) and (max-width: 1279px)"][type="image/jpeg"]',
     }
-};
+}

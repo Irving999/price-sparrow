@@ -85,8 +85,3 @@ module.exports = scrape = async(url) => {
         if (browser) await browser.close()
     }
 }
-
-(async () => {
-    const data = await scrape('https://www.macys.com/shop/product/valentino-mens-uomo-born-in-roma-extradose-parfum-fragrance-collection?ID=21098645&tdp=cm_app~zMCOM-NAVAPP~xcm_zone~zRVI_SSUGG_ZONE~xcm_choiceId~z~xcm_pos~zPos2~xcm_srcCatID~z30088')
-    console.log(data)
-})()

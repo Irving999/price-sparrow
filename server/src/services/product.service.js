@@ -13,7 +13,6 @@ const updateProductPrice = async ({ productId, title, price, currency }) => {
                 currency = $3,
                 last_checked_at = NOW()
             WHERE id = $4
-            AND current_price IS DISTINCT FROM $2
             RETURNING
                 id,
                 url,
@@ -22,19 +21,15 @@ const updateProductPrice = async ({ productId, title, price, currency }) => {
                 last_checked_at AS "lastCheckedAt"`,
             [title, price, currency, productId]
         )
-        
-        // If product price has not changed, return early
-        if (!updatedResult.rowCount) {
-            await client.query('ROLLBACK')
-            return { status: 'no_change', message: 'Price has not changed' }
-        }
-        
+
         const product = updatedResult.rows[0]
-        
-        await client.query(
-            `INSERT INTO price_history (product_id, price) VALUES ($1, $2)`,
-            [productId, price]
-        )
+                
+        if (product.currentPrice !== price) {
+            await client.query(
+                `INSERT INTO price_history (product_id, price) VALUES ($1, $2)`,
+                [productId, price]
+            )
+        }
         
         const matches = await client.query(
             `INSERT INTO alert_watches(watch_id, triggered_price)
@@ -45,7 +40,7 @@ const updateProductPrice = async ({ productId, title, price, currency }) => {
                 AND $2 <= w.target_price
             ON CONFLICT (watch_id, triggered_price) DO NOTHING
             RETURNING watch_id`,
-            [product.id, price]
+            [productId, price]
         )
         
         await client.query('COMMIT')

@@ -1,4 +1,5 @@
-require('dotenv').config()
+require('dotenv').config({ path: '../../.env' })
+
 const pool = require('../../db')
 const scraper = require('../services/scraper')
 const updateProductPrice = require('../services/product.service')
@@ -9,14 +10,17 @@ async function run() {
     for (const product of products) {
         console.log(`Checking ${product.id}`)
 
-        const { title, price, currency } = await scraper(product.url)
-
-        await updateProductPrice({
-            productId: product.id,
-            title,
-            price,
-            currency
-        })
+        try {
+            const { title, price, currency } = await scraper(product.url)
+            await updateProductPrice({
+                productId: product.id,
+                title,
+                price,
+                currency
+            })
+        } catch (error) {
+            console.error(`Error checking product ${product.id}:`, error.message)
+        }
     }
 
     console.log('All price checks complete')

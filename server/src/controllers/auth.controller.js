@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const jwt = require('jsonwebtoken')
 const pool = require('../../db')
 const bcrypt = require('bcrypt')
@@ -69,7 +67,7 @@ const postLogin = async (req, res, next) => {
         }
 
         const { rows } = await pool.query(
-            `SELECT id, email, password FROM users
+            `SELECT id, email, password FROM public."users"
              WHERE email = $1`,
              [email.toLowerCase()]
         )

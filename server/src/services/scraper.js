@@ -9,6 +9,10 @@ module.exports = scrape = async(url) => {
     const siteKey = Object.keys(sites).find(key => url.includes(key))
     const site = sites[siteKey]
 
+    if (!siteKey || !sites[siteKey]) {
+        throw new Error('Unsupported site')
+    }
+
     let browser
     try {
         browser = await chromium.launch({ headless: true })
@@ -20,7 +24,6 @@ module.exports = scrape = async(url) => {
         })
 
         const page = await context.newPage()
-
         await page.goto(url, { waitUntil: 'domcontentloaded' })
 
         const trySelectors = async (selectors) => {
@@ -49,8 +52,11 @@ module.exports = scrape = async(url) => {
 
                     if (!srcset) return null
 
+                    // Split on a comma and whitespace only when a number follows
                     const parts = srcset.split(/,\s+(?=\d)/)
+                    
                     const last = parts[parts.length - 1].trim()
+                    // Split wherever there is whitespace, no matter how much
                     return last.split(/\s+/)[0]
                 })
             )
@@ -58,29 +64,39 @@ module.exports = scrape = async(url) => {
             return urls.filter(url => url !== null)
         }
 
+        const outOfStock = await trySelectors(site.error)
         const titleLoc = await trySelectors(site.titles)
         const priceLoc = await trySelectors(site.prices)
 
-        if (!titleLoc || !priceLoc) {
-            throw new Error('Failed to locate elements')
+        if (!titleLoc) {
+            throw new Error('Failed to locate title')
+        }
+
+        if (!priceLoc && !outOfStock) {
+            throw new Error('Failed to locate price')
         }
 
         const title = (await titleLoc.innerText()).trim()
         
-        const priceRaw = await priceLoc.innerText()
-        const priceClean = Number(priceRaw.replace(/[^0-9.-]+/g, ""))
+        let price
+        if (!outOfStock) {
+            const priceRaw = await priceLoc.innerText()
+            // Delete everything that isn’t a digit, dot, or minus sign
+            price = Number(priceRaw.replace(/[^0-9.-]+/g, ""))
+        } else {
+            price = null
+        }
 
         const imageUrls = await imageFinder(site.gallery, site.images)
 
         return {
             title,
-            price: priceClean,
+            price,
             currency: 'USD',
             images: imageUrls
         }
     } catch (err) {
-        console.error(`Scrape Failed for ${url}:`, err.message)
-        return null
+        throw err
     } finally {
         if (browser) await browser.close()
     }

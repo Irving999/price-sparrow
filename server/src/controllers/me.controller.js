@@ -52,7 +52,12 @@ const getWatch = async (req, res, next) => {
                 'currentPrice', p.current_price,
                 'currency', p.currency,
                 'lastCheckedAt', p.last_checked_at
-                ) AS product
+                ) AS product,
+                (
+                    SELECT json_agg(pi.image_url)
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id
+                ) AS "productImages"
              FROM watches w
              JOIN products p ON p.id = w.product_id
              WHERE w.id = $1

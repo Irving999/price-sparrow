@@ -11,12 +11,13 @@ async function run() {
         console.log(`Checking ${product.id}`)
 
         try {
-            const { title, price, currency } = await scraper(product.url)
+            const { title, price, currency, images } = await scraper(product.url)
             await updateProductPrice({
                 productId: product.id,
                 title,
                 price,
-                currency
+                currency,
+                images
             })
         } catch (error) {
             console.error(`Error checking product ${product.id}:`, error.message)

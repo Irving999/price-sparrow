@@ -1,9 +1,23 @@
 const pool = require('../../db')
 
-const updateProductPrice = async ({ productId, title, price, currency }) => {
+const updateProductPrice = async ({ productId, title, price, currency, images }) => {
     const client = await pool.connect()
     try {
         await client.query('BEGIN')
+
+        await client.query(
+            `INSERT INTO product_images (product_id, image_url)
+            SELECT $1, unnest($2::text[])
+            ON CONFLICT (product_id, image_url) DO NOTHING
+            `,
+            [productId, images || []]
+        )
+
+        const prevPriceResult = await client.query(
+            `SELECT current_price FROM products WHERE id = $1`,
+            [productId]
+        )
+        const prevPrice = prevPriceResult.rows[0].current_price
         
         const updatedResult = await client.query(
             `UPDATE products
@@ -24,7 +38,7 @@ const updateProductPrice = async ({ productId, title, price, currency }) => {
 
         const product = updatedResult.rows[0]
                 
-        if (product.currentPrice !== price) {
+        if (prevPrice !== price) {
             await client.query(
                 `INSERT INTO price_history (product_id, price) VALUES ($1, $2)`,
                 [productId, price]

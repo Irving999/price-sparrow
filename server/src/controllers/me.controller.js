@@ -63,7 +63,7 @@ const getWatch = async (req, res, next) => {
                         json_build_object(
                             'id', ph.id,
                             'price', ph.price,
-                            'checked_at', ph.checked_at
+                            'checkedAt', ph.checked_at
                         )
                     )
                     FROM price_history ph

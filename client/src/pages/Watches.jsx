@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Watches() {
     const [watches, setWatches] = useState([])
@@ -37,16 +37,14 @@ export default function Watches() {
             <div className="mx-24">
                 <h1 className="font-semibold mt-4 text-2xl text-slate-900">Your Watches</h1>
                 <ul className="flex flex-col ml-8 mt-4">
-                    {watches && watches.map((item) => {
+                    {watches && watches.map((watch) => {
                         return (
-                            <li key={item.product.id} className="mb-2">
-                                <a
-                                    href={item.product.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block py-4 px-4 font-semibold bg-white shadow-sm hover:underline hover:underline-offset cursor-pointer rounded-lg">
-                                        {item.product.title || "product"}
-                                </a>
+                            <li key={watch.watchId} className="mb-2">
+                                <Link
+                                    to={`/my-watches/${watch.watchId}`}
+                                    className="block py-4 px-4 font-semibold bg-[#f4f4f4] shadow-sm hover:underline hover:underline-offset cursor-pointer rounded-lg">
+                                        {watch.product.title || "product"}
+                                </Link>
                             </li>
                         )
                     })}

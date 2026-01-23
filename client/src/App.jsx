@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Watches from "./pages/Watches"
+import Product from "./pages/Watch"
 
 function App() {
   return (
@@ -22,6 +23,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Watches />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-watches/:watchId"
+          element={
+            <ProtectedRoute>
+              <Product />
             </ProtectedRoute>
           }
         />

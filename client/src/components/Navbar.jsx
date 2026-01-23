@@ -12,19 +12,17 @@ export default function Navbar() {
         <div className="flex items-center mx-16 mt-4 gap-24 text-white bg-sky-500 rounded-full h-16 shadow-lg shadow-black/20">
             <p className="font-semibold text-xl ml-16">PriceTrackerCracker</p>
             <ul className="flex w-124 justify-evenly">
-                <li
-                    onClick={() => navigate("/dashboard")}
-                    className="font-semibold w-24 text-black-500 hover:underline hover:underline-offset cursor-pointer">
-                        Dashboard
+                <li>
+                    <button type="button" onClick={() => navigate("/dashboard")}
+                        className="font-semibold w-24 text-black-500 hover:underline hover:underline-offset cursor-pointer">
+                            Dashboard
+                    </button>
                 </li>
-                <li
-                    onClick={() => navigate("/my-watches")}
-                    className="font-semibold w-24 text-black-500 hover:underline hover:underline-offset cursor-pointer">
-                        Watches
-                </li>
-                <li
-                    className="font-semibold w-24 text-black-500 hover:underline hover:underline-offset cursor-pointer">
-                        Profile
+                <li>
+                    <button type="button" onClick={() => navigate("/my-watches")}
+                        className="font-semibold w-24 text-black-500 hover:underline hover:underline-offset cursor-pointer">
+                            Watches
+                    </button>
                 </li>
                 
             </ul>

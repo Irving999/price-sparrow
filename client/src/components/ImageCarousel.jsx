@@ -13,7 +13,7 @@ export default function ImageCarousel({ title, images }) {
             spaceBetween={50}
             navigation
             pagination={{ clickable: true }}
-            loop={true}
+            loop={images > 1}
             className="h-[500px] w-full"
         >
             {images.map((img, i) => (

@@ -4,7 +4,7 @@ import Dashboard from "./pages/Dashboard"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Watches from "./pages/Watches"
-import Product from "./pages/Watch"
+import Watch from "./pages/Watch"
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
           path="/my-watches/:watchId"
           element={
             <ProtectedRoute>
-              <Product />
+              <Watch />
             </ProtectedRoute>
           }
         />

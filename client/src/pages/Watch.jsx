@@ -1,14 +1,43 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import Navbar from "../components/Navbar"
-import Swiper from "../components/ImageCarousel"
+import ImageCarousel from "../components/ImageCarousel"
 import PriceChart from "../components/PriceChart"
 
-export default function Product() {
+export default function Watch() {
+    const [watches, setWatches] = useState([])
     const [watch, setWatch] = useState(null)
     const [error, setError] = useState("")
+
     const { watchId } = useParams()
+    const navigate = useNavigate()
+
     const token = localStorage.getItem("token")
+
+    useEffect(() => {
+        (async () => {
+            try {
+                const response = await fetch("http://localhost:3000/api/me/watches", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    }
+                })
+                const data = await response.json()
+
+                if (!response.ok) {
+                    setError(data.message)
+                    return
+                }
+
+                setWatches(data)
+            } catch (error) {
+                setError("Unable to connect to server. Please try again later")
+                console.error("Server error: ", error)
+            }
+        })()
+    }, [])
 
     useEffect(() => {
         (async () => {
@@ -21,7 +50,6 @@ export default function Product() {
                     }
                 })
                 const data = await response.json()
-                console.log(data)
                 if (!response.ok) {
                     setError(data.message)
                     return
@@ -32,18 +60,62 @@ export default function Product() {
                 setError("Server error")
             }
         })()
-    }, [])
+    }, [watchId])
+
+    const handleNext = () => {
+        let currentIndex = watches.findIndex(w => String(w.watchId) === watchId)
+        if (currentIndex === -1 || currentIndex === watches.length - 1) {
+            return
+        }
+
+        const nextWatch = watches[currentIndex + 1]
+        navigate(`/my-watches/${nextWatch.watchId}`)
+    }
+
+    const handlePrev = () => {
+        let currentIndex = watches.findIndex(w => String(w.watchId) === watchId)
+        if (currentIndex === -1 || currentIndex === 0) {
+            return
+        }
+        
+        const prevWatch = watches[currentIndex - 1]
+        navigate(`/my-watches/${prevWatch.watchId}`)
+    }
 
     const lastCheckedAt = watch ? new Date(watch.product.lastCheckedAt) : null
 
     return (
         <>
             <Navbar />
+            <div className="flex justify-between mx-12 my-4">
+                <button
+                    onClick={handlePrev}
+                    disabled={watches.findIndex(w => String(w.watchId) === watchId) <= 0}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-300 duration-200
+                        ${watches.findIndex(w => String(w.watchId) === watchId) <= 0
+                            ? "cursor-not-allowed" 
+                            : "cursor-pointer"}`
+                        }
+                >
+                    ← Previous
+                </button>
+                <button
+                    onClick={handleNext}
+                    disabled={watches.findIndex(w => String(w.watchId) === watchId) === watches.length - 1}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-200 hover:bg-gray-300
+                        ${watches.findIndex(w => String(w.watchId) === watchId) === watches.length - 1
+                            ? "cursor-not-allowed" 
+                            : "cursor-pointer"}`
+                        }
+                >
+                    Next →
+                </button>
+            </div>
             {error && <p className="text-red-500">{error}</p>}
             {
                 watch && (
                     <div className="mx-24 my-8">
-                        <Swiper title={watch.product.title} images={watch.productImages}/>
+                        <ImageCarousel key={watch.watchId} title={watch.product.title} images={watch.productImages}/>
                         <p className="block w-fit ml-auto hover:underline hover:underline-offset">
                             <a href={watch.product.url} target="_blank" rel="noopener noreferrer">
                                 View product

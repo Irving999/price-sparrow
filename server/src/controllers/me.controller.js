@@ -28,8 +28,10 @@ const getMe = async (req, res, next) => {
         }
 
         res.json({
-            id: user.id,
-            email: user.email
+            user: {
+                id: user.id,
+                email: user.email
+            }
         })
     } catch (err) {
         next(err)

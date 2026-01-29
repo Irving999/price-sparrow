@@ -86,7 +86,11 @@ const postLogin = async (req, res, next) => {
         
         res.status(200).json({
             message: 'Logged in successfully',
-            accessToken
+            token: accessToken,
+            user: {
+                id: user.id,
+                email: user.email
+            }
         })
     } catch (err) {
         next(err)

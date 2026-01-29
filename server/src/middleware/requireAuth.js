@@ -11,6 +11,6 @@ module.exports = function requireAuth(req, res, next) {
         req.userId = payload.userId
         next()
     } catch (err) {
-        return res.status(403).json({ error: 'Invalid or expires token' })
+        return res.status(403).json({ message: 'Invalid or expired token' })
     }
 }

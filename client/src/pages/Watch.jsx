@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import Navbar from "../components/Navbar"
 import ImageCarousel from "../components/ImageCarousel"
 import PriceChart from "../components/PriceChart"
+import { useAuth } from "../context/AuthContext"
 
 export default function Watch() {
     const [watches, setWatches] = useState([])
@@ -11,11 +12,10 @@ export default function Watch() {
 
     const { watchId } = useParams()
     const navigate = useNavigate()
-
-    const token = localStorage.getItem("token")
+    const { token } = useAuth()
 
     useEffect(() => {
-        (async () => {
+        const fetchWatches = async () => {
             try {
                 const response = await fetch("http://localhost:3000/api/me/watches", {
                     method: "GET",
@@ -32,15 +32,17 @@ export default function Watch() {
                 }
 
                 setWatches(data)
+                setError("")
             } catch (error) {
                 setError("Unable to connect to server. Please try again later")
                 console.error("Server error: ", error)
             }
-        })()
+        }
+        fetchWatches()
     }, [])
 
     useEffect(() => {
-        (async () => {
+        const fetchWatch = async () => {
             try {
                 const response = await fetch(`http://localhost:3000/api/me/watches/${watchId}`, {
                     method: "GET",
@@ -50,16 +52,20 @@ export default function Watch() {
                     }
                 })
                 const data = await response.json()
+
                 if (!response.ok) {
                     setError(data.message)
                     return
                 }
+
                 setWatch(data)
+                setError("")
             } catch (error) {
                 console.error("Server error: ", error)
                 setError("Server error")
             }
-        })()
+        }
+        fetchWatch()
     }, [watchId])
 
     const handleNext = () => {
@@ -83,6 +89,17 @@ export default function Watch() {
     }
 
     const lastCheckedAt = watch ? new Date(watch.product.lastCheckedAt) : null
+
+    if (error && !watch) {
+        return (
+            <>
+                <Navbar />
+                <div className="flex justify-center items-center min-h-screen">
+                    <p className="text-red-500 text-lg">{error}</p>
+                </div>
+            </>
+        )
+    }
 
     return (
         <>
@@ -111,58 +128,55 @@ export default function Watch() {
                     Next →
                 </button>
             </div>
-            {error && <p className="text-red-500">{error}</p>}
-            {
-                watch && (
-                    <div className="mx-24 my-8">
-                        <ImageCarousel key={watch.watchId} title={watch.product.title} images={watch.productImages}/>
-                        <p className="block w-fit ml-auto hover:underline hover:underline-offset">
-                            <a href={watch.product.url} target="_blank" rel="noopener noreferrer">
-                                View product
-                            </a>
-                        </p>
-                        <h1 className="font-semibold mt-4 text-2xl text-slate-900">{watch.product.title}</h1>
-                        <div className="pl-4">
-                            <div className="flex flex-col ">
-                                <div className="flex-1">
-                                    {watch.product.currentPrice ? (
-                                        <span>
-                                            This product is currently valued at
-                                            <strong> ${watch.product.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
-                                        </span>
-                                        ) : (
-                                        <span>
-                                            This product is currently
-                                            <strong className="text-red-600"> out of stock</strong>
-                                        </span>
-                                    )}
-                                    <p>
-                                        You're waiting for the product to drop to
-                                        <strong> ${watch.targetPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })} </strong>
-                                        or less
-                                    </p>
-                                    <p>
-                                        This product was last checked on{" "}
-                                        <strong>
-                                            {lastCheckedAt.toLocaleString("en-US", {
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
-                                                hour: "2-digit",
-                                                minute: "2-digit",
-                                                hour12: true
-                                            })}
-                                        </strong>
-                                    </p>
-                                </div>
-                            </div>
-                            <div>
-                                <PriceChart priceData={watch.productHistory} />
+            {watch && (
+                <div className="mx-24 my-8">
+                    <ImageCarousel key={watch.watchId} title={watch.product.title} images={watch.productImages}/>
+                    <p className="block w-fit ml-auto hover:underline hover:underline-offset">
+                        <a href={watch.product.url} target="_blank" rel="noopener noreferrer">
+                            View product
+                        </a>
+                    </p>
+                    <h1 className="font-semibold mt-4 text-2xl text-slate-900">{watch.product.title}</h1>
+                    <div className="pl-4">
+                        <div className="flex flex-col ">
+                            <div className="flex-1">
+                                {watch.product.currentPrice ? (
+                                    <span>
+                                        This product is currently valued at
+                                        <strong> ${watch.product.currentPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}</strong>
+                                    </span>
+                                    ) : (
+                                    <span>
+                                        This product is currently
+                                        <strong className="text-red-600"> out of stock</strong>
+                                    </span>
+                                )}
+                                <p>
+                                    You're waiting for the product to drop to
+                                    <strong> ${watch.targetPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })} </strong>
+                                    or less
+                                </p>
+                                <p>
+                                    This product was last checked on{" "}
+                                    <strong>
+                                        {lastCheckedAt.toLocaleString("en-US", {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                            hour12: true
+                                        })}
+                                    </strong>
+                                </p>
                             </div>
                         </div>
+                        <div>
+                            <PriceChart priceData={watch.productHistory} />
+                        </div>
                     </div>
-                )
-            }
+                </div>
+            )}
         </>
     )
 }

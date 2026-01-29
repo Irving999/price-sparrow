@@ -1,15 +1,11 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function Watches() {
     const [watches, setWatches] = useState([])
-    const navigate = useNavigate()
-    const token = localStorage.getItem("token")
-
-    if (!token) {
-        navigate("/login")
-    }
+    const { token } = useAuth()
 
     useEffect(() => {
         async function getWatches() {
@@ -22,6 +18,10 @@ export default function Watches() {
                     }
                 })
 
+                if (!response.ok) {
+                    return
+                }
+
                 const data = await response.json()
                 setWatches(data)
             } catch (error) {
@@ -29,7 +29,7 @@ export default function Watches() {
             }
         }
         getWatches()
-    }, [])
+    }, [token])
 
     return (
         <div className="flex min-h-screen flex-col">

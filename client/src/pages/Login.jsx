@@ -1,13 +1,10 @@
 import { useState } from "react"
-import { useNavigate, Navigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 export default function Login() {
     const [formInput, setFormInput] = useState({ email: "", password: "" })
     const [message, setMessage] = useState({ success: "", error: ""})
-    const navigate = useNavigate()
-    const token = localStorage.getItem("token")
-
-    if (token) return <Navigate to="/dashboard" />
+    const { login } = useAuth()
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -31,11 +28,9 @@ export default function Login() {
             })
 
             const data = await res.json()
-
             if (res.ok) {
                 setMessage({ success: data.message, error: "" })
-                localStorage.setItem("token", data.accessToken)
-                navigate("/dashboard")
+                login(data.token, data.user)
             } else {
                 setMessage({ error: data.error || "Login failed", success: "" })
             }

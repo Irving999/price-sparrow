@@ -102,7 +102,7 @@ export default function Watch() {
     }
 
     return (
-        <>
+        <div className="flex min-h-screen flex-col">
             <Navbar />
             <div className="flex justify-between mx-12 my-4">
                 <button
@@ -177,6 +177,6 @@ export default function Watch() {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     )
 }

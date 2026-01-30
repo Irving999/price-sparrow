@@ -1,5 +1,6 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Navbar from "../components/Navbar"
+import { useAuth } from "../context/AuthContext"
 
 export default function Dashboard() {
     const [url, setUrl] = useState("")
@@ -7,6 +8,8 @@ export default function Dashboard() {
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
     const [loading, setLoading] = useState(false)
+
+    const { token } = useAuth()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -19,7 +22,6 @@ export default function Dashboard() {
 
         setLoading(true)
         try {
-            const token = localStorage.getItem("token")
             const response = await fetch("http://localhost:3000/api/me/watches", {
                 method: "POST",
                 headers: {

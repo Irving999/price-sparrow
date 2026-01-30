@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Watches() {
     const [watches, setWatches] = useState([])
-    const { token } = useAuth()
+    const { token, logout } = useAuth()
 
     useEffect(() => {
         async function getWatches() {
@@ -19,6 +19,7 @@ export default function Watches() {
                 })
 
                 if (!response.ok) {
+                    logout()
                     return
                 }
 

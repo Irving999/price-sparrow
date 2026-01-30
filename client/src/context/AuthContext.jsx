@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { jwtDecode } from 'jwt-decode'
 
 const AuthContext = createContext()
 
@@ -50,6 +51,32 @@ export function AuthProvider({ children }) {
             }
         }
         verifyToken()
+    }, [token])
+
+    useEffect(() => {
+        if (!token) return
+
+        try {
+            const decoded = jwtDecode(token)
+            const expiryTime = decoded.exp * 1000
+            const now = Date.now()
+
+            if (expiryTime <= now) {
+                logout()
+                return
+            }
+
+            // Logout when token expires
+            const timeUntilExpiry = expiryTime - now
+            const timeoutId = setTimeout(() => {
+                logout()
+            }, timeUntilExpiry)
+
+            return () => clearTimeout(timeoutId)
+        } catch (error) {
+            console.error("Invalid token", error)
+            logout()
+        }
     }, [token])
 
     const isAuthenticated = !!token && !!user

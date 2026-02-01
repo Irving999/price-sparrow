@@ -1,11 +1,13 @@
 const pool = require('../../db')
 
-const updateProductPrice = async ({ productId, title, price, currency, images }) => {
-    const client = await pool.connect()
-    try {
-        await client.query('BEGIN')
+const updateProductPrice = async ({ client, productId, title, price, currency, images }) => {
+    const internalClient = client || await pool.connect()
+    const isInternalClient = !client
 
-        await client.query(
+    try {
+        if (isInternalClient) await internalClient.query('BEGIN')
+
+        await internalClient.query(
             `INSERT INTO product_images (product_id, image_url)
             SELECT $1, unnest($2::text[])
             ON CONFLICT (product_id, image_url) DO NOTHING
@@ -13,13 +15,13 @@ const updateProductPrice = async ({ productId, title, price, currency, images })
             [productId, images || []]
         )
 
-        const prevPriceResult = await client.query(
+        const prevPriceResult = await internalClient.query(
             `SELECT current_price FROM products WHERE id = $1`,
             [productId]
         )
         const prevPrice = prevPriceResult.rows[0].current_price
         
-        const updatedResult = await client.query(
+        const updatedResult = await internalClient.query(
             `UPDATE products
             SET 
                 title = $1,
@@ -39,13 +41,13 @@ const updateProductPrice = async ({ productId, title, price, currency, images })
         const product = updatedResult.rows[0]
                 
         if (prevPrice !== price) {
-            await client.query(
+            await internalClient.query(
                 `INSERT INTO price_history (product_id, price) VALUES ($1, $2)`,
                 [productId, price]
             )
         }
         
-        const matches = await client.query(
+        const matches = await internalClient.query(
             `INSERT INTO alert_watches(watch_id, triggered_price)
             SELECT w.id, $2
             FROM watches w
@@ -57,7 +59,7 @@ const updateProductPrice = async ({ productId, title, price, currency, images })
             [productId, price]
         )
         
-        await client.query('COMMIT')
+        if (isInternalClient) await internalClient.query('COMMIT')
         
         return {
             product,
@@ -65,10 +67,10 @@ const updateProductPrice = async ({ productId, title, price, currency, images })
             alertedWatches: matches.rows.map(r => r.watch_id)
         }
     } catch (err) {
-        await client.query('ROLLBACK')
+        if (isInternalClient) await internalClient.query('ROLLBACK')
         throw err
     } finally {
-        client.release()
+        if (isInternalClient) internalClient.release()
     }
 }
 

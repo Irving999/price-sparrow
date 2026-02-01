@@ -1,4 +1,6 @@
 const pool = require('../../db')
+const scraper = require('../services/scraper')
+const updateProductPrice = require('../services/product.service')
 
 function isValidUrl(str) {
     try {
@@ -147,13 +149,37 @@ const postWatches = async (req, res, next) => {
             INSERT INTO products (url)
             VALUES ($1)
             ON CONFLICT (url) 
-            DO UPDATE SET url = EXCLUDED.url
+            DO NOTHING
             RETURNING id, url, title, current_price, currency, last_checked_at
             `,
             [url]
         )
-
-        const product = productResult.rows[0]
+        
+        let product
+        if (productResult.rows.length !== 0) {
+            const existing = await client.query(
+                `SELECT id, url, title, current_price, last_checked_at
+                 FROM products
+                 WHERE url = $1`,
+                [url]
+            )
+            product = existing.rows[0]
+            try {
+                const { title, price, currency, images } = await scraper(product.url)
+                await updateProductPrice({
+                    client,
+                    productId: product.id,
+                    title,
+                    price,
+                    currency,
+                    images
+                })
+            } catch (error) {
+                console.error(`Error checking product ${product.id}:`, error)
+            }
+        } else {
+            product = productResult.rows[0]
+        }
 
         const watchResult = await client.query(
             `

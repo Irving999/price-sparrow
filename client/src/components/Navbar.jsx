@@ -22,11 +22,11 @@ export default function Navbar() {
     return (
         <>
             {/* Mobile header with hamburger */}
-            <div className="sm:hidden fixed top-0 left-0 right-0 z-50 nav-glass shadow-lg">
+            <div className="sm:hidden fixed top-0 left-0 right-0 z-50 glass shadow-lg">
                 <div className="flex justify-end px-6 py-4">
                     <button onClick={() => setIsOpen(!isOpen)}>
                         <svg
-                            className="w-8 h-8 text-white hover:bg-gray-300 rounded-full p-1 cursor-pointer transition-colors duration-200"
+                            className="w-8 h-8 hover:bg-black/5 rounded-full p-1 cursor-pointer transition-colors duration-200"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -54,7 +54,7 @@ export default function Navbar() {
             </div>
 
             {/* Desktop centered nav */}
-            <nav className="hidden sm:flex fixed top-4 left-1/2 -translate-x-1/2 px-12 items-center text-white font-thin rounded-full h-16 nav-glass shadow-lg shadow-black/20 z-50">
+            <nav className="hidden sm:flex fixed top-4 left-1/2 -translate-x-1/2 px-12 items-center text-black/70 font-thin rounded-full h-16 glass shadow-lg shadow-black/20 z-50">
                 <ul className="flex gap-4">
                     <li>
                         <Link to="/dashboard" className="nav-bullet rounded-full cursor-pointer">
@@ -75,14 +75,14 @@ export default function Navbar() {
             </nav>
 
             {/* Mobile menu dropdown */}
-            <div className={`fixed top-[57px] left-0 right-0 bottom-0 nav-glass sm:hidden z-40 overflow-hidden transition-all duration-300 ease ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
-                <ul className="flex flex-col text-white font-semibold text-lg">
-                    <li className="text-center px-6 py-3 border-b border-white/30">
+            <div className={`fixed top-[57px] left-0 right-0 bottom-0 glass sm:hidden z-40 overflow-hidden transition-all duration-300 ease ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
+                <ul className="flex flex-col font-semibold text-lg">
+                    <li className="text-center px-6 py-3">
                         <Link to="/dashboard" className="glow block" onClick={() => setIsOpen(false)}>
                             Dashboard
                         </Link>
                     </li>
-                    <li className="text-center px-6 py-3 border-b border-white/30">
+                    <li className="text-center px-6 py-3">
                         <Link to="/my-watches" className="glow block" onClick={() => setIsOpen(false)}>
                             Watches
                         </Link>

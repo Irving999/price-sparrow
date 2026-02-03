@@ -1,5 +1,67 @@
 @import "tailwindcss";
 
+.background {
+    width: 100vw;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(to right, #b8e0f5, #e5c5f0);
+    z-index: 5;
+}
+
+.square {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.square1 {
+    width: 82vw;
+    aspect-ratio: 1 / 1;
+    left: -50vw;
+    top: -82vw; 
+    transform-origin: right;
+    transform: rotate(0deg);
+    z-index: 4;
+    transition: transform 600ms ease;
+}
+
+.square2 {
+    width: 130vw;
+    aspect-ratio: 1 / 1;
+    left: -106vw;
+    top: -130vw;
+    transform-origin: right;
+    transform: rotate(45deg);
+    transition: transform 600ms ease;
+    z-index: 3;
+}
+
+.square3 {
+    width: 130vw;
+    aspect-ratio: 1 / 1;
+    left: -97vw;
+    top: -130vw;
+    transform: rotate(0deg);
+    transform-origin: bottom right;
+    transition: transform 800ms ease;
+    z-index: 1;
+}
+
+.square1.mounted {
+    transform: rotate(-30deg);
+}
+
+.square2.mounted {
+    transform: rotate(-50deg);
+}
+
+.square3.mounted {
+    transform: rotate(-75deg);
+}
+
+
 .nav-glass {
     background-color: rgba(23, 23, 23, 0.25);
     backdrop-filter: blur(10px);
@@ -51,4 +113,19 @@
 
 .glow:hover {
     text-shadow: 0 0 3px rgba(255, 255, 255, 0.7);
+}
+
+.loading {
+    width: 3em;
+    height: 3em;
+    border: 4px solid #ddd;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

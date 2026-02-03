@@ -8,30 +8,12 @@ export default function Navbar() {
 
     return (
         <>
-            <nav className="mx-auto mt-4 w-md sm:w-xl transition-all duration-300 ease-out relative z-100">
-                <div className="flex justify-between px-6 items-center text-white bg-sky-500 rounded-full h-16 shadow-lg shadow-black/20">
-                    <p className="font-semibold text-xl">PriceTrackerCracker</p>
-                    <ul className="hidden sm:flex gap-4">
-                        <li>
-                            <Link to="/dashboard" className="nav-bullet rounded-full cursor-pointer">
-                            Dashboard
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/my-watches" className="nav-bullet rounded-full cursor-pointer">
-                            Watches
-                            </Link>
-                        </li>
-                        <li>
-                            <button type="button" onClick={logout}
-                                className="nav-bullet rounded-full cursor-pointer">
-                                    Logout
-                            </button>
-                        </li>
-                    </ul>
+            {/* Mobile header with hamburger */}
+            <div className="sm:hidden fixed top-0 left-0 right-0 z-50 bg-sky-500 shadow-lg">
+                <div className="flex justify-end px-6 py-4">
                     <button onClick={() => setIsOpen(!isOpen)}>
                         <svg
-                            className="w-11 h-11 ml-8 sm:hidden hover:bg-sky-400 rounded-full p-2 cursor-pointer transition-colors duration-200"
+                            className="w-8 h-8 text-white hover:bg-sky-400 rounded-full p-1 cursor-pointer transition-colors duration-200"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -44,7 +26,7 @@ export default function Navbar() {
                                     strokeWidth={2}
                                     d="M6 18L18 6M6 6l12 12"
                                 />
-                                ) : (
+                            ) : (
                                 <path
                                     strokeLinecap="round"
                                     strokeLinejoin="round"
@@ -55,23 +37,47 @@ export default function Navbar() {
                         </svg>
                     </button>
                 </div>
+                <div className="h-px bg-white/30"></div>
+            </div>
+
+            {/* Desktop centered nav */}
+            <nav className="hidden sm:block mx-auto mt-4 w-sm transition-all duration-300 ease-out relative z-100">
+                <div className="flex justify-center px-6 items-center text-white bg-sky-500 rounded-full h-16 shadow-lg shadow-black/20">
+                    <ul className="flex gap-4">
+                        <li>
+                            <Link to="/dashboard" className="nav-bullet rounded-full cursor-pointer">
+                                Dashboard
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/my-watches" className="nav-bullet rounded-full cursor-pointer">
+                                Watches
+                            </Link>
+                        </li>
+                        <li>
+                            <button type="button" onClick={logout} className="nav-bullet rounded-full cursor-pointer">
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </nav>
 
-            <div className={`absolute bg-sky-500 sm:hidden w-full h-full z-10 overflow-hidden transition-all duration-300 ease
-                    ${isOpen ? "max-h-screen" : "max-h-0"}`}>
-                <ul className="flex flex-col px-3 w-full text-white font-semibold text-lg absolute top-24">
-                    <li className="pl-3 border-b border-white">
-                        <Link to="/dashboard" className="glow">
+            {/* Mobile menu dropdown */}
+            <div className={`h-full fixed top-[57px] left-0 right-0 bg-sky-500 sm:hidden z-40 overflow-hidden transition-all duration-300 ease ${isOpen ? "max-h-screen" : "max-h-0"}`}>
+                <ul className="flex flex-col text-white font-semibold text-lg">
+                    <li className="text-center px-6 py-3 border-b border-white/30">
+                        <Link to="/dashboard" className="glow block" onClick={() => setIsOpen(false)}>
                             Dashboard
                         </Link>
                     </li>
-                    <li className="pl-3 border-b border-white">
-                        <Link to="/my-watches" className="glow">
+                    <li className="text-center px-6 py-3 border-b border-white/30">
+                        <Link to="/my-watches" className="glow block" onClick={() => setIsOpen(false)}>
                             Watches
                         </Link>
                     </li>
-                    <li>
-                        <button type="button" onClick={logout} className="glow lock mx-auto">
+                    <li className=" self-center px-6 py-3">
+                        <button type="button" onClick={logout} className="glow block w-full text-left">
                             Logout
                         </button>
                     </li>

@@ -94,7 +94,7 @@ export default function Watch() {
         return (
             <>
                 <Navbar />
-                <div className="flex justify-center items-center min-h-screen">
+                <div className="relative flex justify-center items-center min-h-screen">
                     <p className="text-red-500 text-lg">{error}</p>
                 </div>
             </>
@@ -102,15 +102,15 @@ export default function Watch() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="relative z-10 flex min-h-screen flex-col">
             <Navbar />
-            <div className="flex justify-between mx-12 my-4">
+            <div className="flex justify-between mx-12 mt-18">
                 <button
                     onClick={handlePrev}
                     disabled={watches.findIndex(w => String(w.watchId) === watchId) <= 0}
                     className={`px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-300 duration-200
                         ${watches.findIndex(w => String(w.watchId) === watchId) <= 0
-                            ? "cursor-not-allowed" 
+                            ? "cursor-not-allowed"
                             : "cursor-pointer"}`
                         }
                 >
@@ -121,7 +121,7 @@ export default function Watch() {
                     disabled={watches.findIndex(w => String(w.watchId) === watchId) === watches.length - 1}
                     className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-200 hover:bg-gray-300
                         ${watches.findIndex(w => String(w.watchId) === watchId) === watches.length - 1
-                            ? "cursor-not-allowed" 
+                            ? "cursor-not-allowed"
                             : "cursor-pointer"}`
                         }
                 >

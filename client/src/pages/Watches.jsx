@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext"
 
 export default function Watches() {
     const [watches, setWatches] = useState([])
@@ -33,9 +33,9 @@ export default function Watches() {
     }, [token])
 
     return (
-        <div className="flex min-h-screen flex-col">
+        <div className="relative z-10 mb-6 min-h-screen flex flex-col">
             <Navbar />
-            <div className="mx-24">
+            <div className="mx-24 mt-18">
                 <h1 className="font-semibold mt-4 text-2xl text-slate-900">Your Watches</h1>
                 <ul className="flex flex-col ml-8 mt-4">
                     {watches && watches.map((watch) => {

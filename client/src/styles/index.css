@@ -1,12 +1,15 @@
 @import "tailwindcss";
 
-body {
-    background-color: white;
+.nav-glass {
+    background-color: rgba(23, 23, 23, 0.25);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(15, 14, 14, 0.2);
+    border: 1px solid rgba(71, 67, 67, 0.1);
 }
 
 .nav-bullet {
     position: relative;
-    padding-left: 1em;
+    margin-left: 1em;
 }
 
 .nav-bullet::before {
@@ -30,7 +33,7 @@ body {
 
 .nav-bullet:hover::before {
     opacity: 1;
-    transform: translate(-11px, -50%);
+    transform: translate(-27px, -50%);
 }
 
 .nav-bullet:active::before {

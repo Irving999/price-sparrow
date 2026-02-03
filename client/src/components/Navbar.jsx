@@ -1,19 +1,32 @@
 import { Link } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
     const { logout } = useAuth()
 
+    // Prevent scrolling when dropdown is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'unset'
+        }
+
+        return () => {
+            document.body.style.overflow = 'unset'
+        }
+    }, [isOpen])
+
     return (
         <>
             {/* Mobile header with hamburger */}
-            <div className="sm:hidden fixed top-0 left-0 right-0 z-50 bg-sky-500 shadow-lg">
+            <div className="sm:hidden fixed top-0 left-0 right-0 z-50 nav-glass shadow-lg">
                 <div className="flex justify-end px-6 py-4">
                     <button onClick={() => setIsOpen(!isOpen)}>
                         <svg
-                            className="w-8 h-8 text-white hover:bg-sky-400 rounded-full p-1 cursor-pointer transition-colors duration-200"
+                            className="w-8 h-8 text-white hover:bg-gray-300 rounded-full p-1 cursor-pointer transition-colors duration-200"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -41,30 +54,28 @@ export default function Navbar() {
             </div>
 
             {/* Desktop centered nav */}
-            <nav className="hidden sm:block mx-auto mt-4 w-sm transition-all duration-300 ease-out relative z-100">
-                <div className="flex justify-center px-6 items-center text-white bg-sky-500 rounded-full h-16 shadow-lg shadow-black/20">
-                    <ul className="flex gap-4">
-                        <li>
-                            <Link to="/dashboard" className="nav-bullet rounded-full cursor-pointer">
-                                Dashboard
-                            </Link>
-                        </li>
-                        <li>
-                            <Link to="/my-watches" className="nav-bullet rounded-full cursor-pointer">
-                                Watches
-                            </Link>
-                        </li>
-                        <li>
-                            <button type="button" onClick={logout} className="nav-bullet rounded-full cursor-pointer">
-                                Logout
-                            </button>
-                        </li>
-                    </ul>
-                </div>
+            <nav className="hidden sm:flex fixed top-4 left-1/2 -translate-x-1/2 px-12 items-center text-white font-thin rounded-full h-16 nav-glass shadow-lg shadow-black/20 z-50">
+                <ul className="flex gap-4">
+                    <li>
+                        <Link to="/dashboard" className="nav-bullet rounded-full cursor-pointer">
+                            Dashboard
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/my-watches" className="nav-bullet rounded-full cursor-pointer">
+                            Watches
+                        </Link>
+                    </li>
+                    <li>
+                        <button type="button" onClick={logout} className="nav-bullet rounded-md cursor-pointer">
+                            Logout
+                        </button>
+                    </li>
+                </ul>
             </nav>
 
             {/* Mobile menu dropdown */}
-            <div className={`h-full fixed top-[57px] left-0 right-0 bg-sky-500 sm:hidden z-40 overflow-hidden transition-all duration-300 ease ${isOpen ? "max-h-screen" : "max-h-0"}`}>
+            <div className={`fixed top-[57px] left-0 right-0 bottom-0 nav-glass sm:hidden z-40 overflow-hidden transition-all duration-300 ease ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
                 <ul className="flex flex-col text-white font-semibold text-lg">
                     <li className="text-center px-6 py-3 border-b border-white/30">
                         <Link to="/dashboard" className="glow block" onClick={() => setIsOpen(false)}>
@@ -76,8 +87,8 @@ export default function Navbar() {
                             Watches
                         </Link>
                     </li>
-                    <li className=" self-center px-6 py-3">
-                        <button type="button" onClick={logout} className="glow block w-full text-left">
+                    <li className="text-center px-6 py-3">
+                        <button type="button" onClick={logout} className="glow block w-full">
                             Logout
                         </button>
                     </li>

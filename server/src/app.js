@@ -15,6 +15,7 @@ app.use('/api/auth', require('./routers/auth.router'))
 app.use('/api/me', require('./routers/me.router'))
 app.use('/api/products', require('./routers/products.router'))
 app.use('/api/alerts', require('./routers/alerts.router'))
+app.use('/api/stores', require('./routers/stores.router'))
 
 // Error handling
 app.use((req, res) => {

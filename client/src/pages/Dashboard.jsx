@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Navbar from "../components/Navbar"
 import { useAuth } from "../context/AuthContext"
+import { useNavigate } from "react-router-dom";
 import AnimatedBackground from "../components/AnimatedBackground"
 import StoreMarquee from "../components/StoreMarquee"
 
@@ -9,12 +10,17 @@ export default function Dashboard() {
     const [price, setPrice] = useState("")
     const [error, setError] = useState("")
     const [success, setSuccess] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [submitLoading, setSubmitLoading] = useState(false)
 
-    const { token } = useAuth()
+    const { token, isAuthenticated } = useAuth()
+    const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        if (!isAuthenticated) {
+            navigate("/login")
+        }
 
         if (!url || !price) {
             setError("Fields cannot be empty")
@@ -22,7 +28,7 @@ export default function Dashboard() {
             return
         }
 
-        setLoading(true)
+        setSubmitLoading(true)
         try {
             const response = await fetch("http://localhost:3000/api/me/watches", {
                 method: "POST",
@@ -41,7 +47,7 @@ export default function Dashboard() {
             if (!response.ok) {
                 setError(data.error || "Something went wrong")
                 setSuccess("")
-                setLoading(false)
+                setSubmitLoading(false)
                 return
             }
 
@@ -49,10 +55,10 @@ export default function Dashboard() {
             setError("")
             setUrl("")
             setPrice("")
-            setLoading(false)
+            setSubmitLoading(false)
         } catch (error) {
             setError("Server error")
-            setLoading(false)
+            setSubmitLoading(false)
             console.error(error)
         }
     }
@@ -95,9 +101,9 @@ export default function Dashboard() {
                             <button
                                 className="w-full font-thin sm:w-auto text-white bg-[#252529] border-1 border-transparent hover:bg-transparent hover:border-1 hover:text-black hover:border-black py-2 sm:py-1 px-4 sm:px-3 rounded-xl cursor-pointer transition-colors duration-200 font-medium"
                                 type="submit"
-                                disabled={loading}
+                                disabled={submitLoading}
                             >
-                                {loading ? "Adding..." : "Add Product"}
+                                {submitLoading ? "Adding..." : "Add Product"}
                             </button>
                         </form>
                     </div>

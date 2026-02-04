@@ -13,11 +13,9 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route
-            path="/dashboard"
+            path="/"
             element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
+              <Dashboard />
             }
           />
           <Route

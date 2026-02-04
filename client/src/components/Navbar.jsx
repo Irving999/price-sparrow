@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
-    const { logout } = useAuth()
+    const { logout, isAuthenticated, loading } = useAuth()
 
     // Prevent scrolling when dropdown is open
     useEffect(() => {
@@ -19,6 +19,8 @@ export default function Navbar() {
         }
     }, [isOpen])
 
+    if (loading) return null
+    
     return (
         <>
             {/* Mobile header with hamburger */}
@@ -57,7 +59,7 @@ export default function Navbar() {
             <nav className="hidden sm:flex fixed top-4 left-1/2 -translate-x-1/2 px-12 items-center text-black/70 font-thin rounded-full h-16 glass shadow-lg shadow-black/20 z-50">
                 <ul className="flex gap-4">
                     <li>
-                        <Link to="/dashboard" className="nav-bullet rounded-full cursor-pointer">
+                        <Link to="/" className="nav-bullet rounded-full cursor-pointer">
                             Dashboard
                         </Link>
                     </li>
@@ -67,9 +69,16 @@ export default function Navbar() {
                         </Link>
                     </li>
                     <li>
-                        <button type="button" onClick={logout} className="nav-bullet rounded-md cursor-pointer">
-                            Logout
-                        </button>
+                        {isAuthenticated ? (
+                                <button type="button" onClick={logout} className="nav-bullet rounded-md  cursor-pointer">
+                                    Logout
+                                </button>
+                            ) : (
+                                <Link to="/login" className="nav-bullet rounded-md  cursor-pointer">
+                                    Login
+                                </Link>
+                            )
+                        }
                     </li>
                 </ul>
             </nav>
@@ -78,7 +87,7 @@ export default function Navbar() {
             <div className={`fixed top-[57px] left-0 right-0 bottom-0 glass sm:hidden z-40 overflow-hidden transition-all duration-300 ease ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
                 <ul className="flex flex-col font-semibold text-lg">
                     <li className="text-center px-6 py-3">
-                        <Link to="/dashboard" className="glow block" onClick={() => setIsOpen(false)}>
+                        <Link to="/" className="glow block" onClick={() => setIsOpen(false)}>
                             Dashboard
                         </Link>
                     </li>
@@ -88,9 +97,16 @@ export default function Navbar() {
                         </Link>
                     </li>
                     <li className="text-center px-6 py-3">
-                        <button type="button" onClick={logout} className="glow block w-full">
-                            Logout
-                        </button>
+                        {isAuthenticated ? (
+                                <button type="button" onClick={logout} className="glow block w-full">
+                                    Logout
+                                </button>
+                            ) : (
+                                <Link to="/login" className="glow block">
+                                    Login
+                                </Link>
+                            )
+                        }
                     </li>
                 </ul>
             </div>

@@ -14,14 +14,14 @@ export function AuthProvider({ children }) {
         localStorage.setItem("token", newToken)
         setToken(newToken)
         setUser(user)
-        navigate("/")
+        navigate("/dashboard")
     }
 
     const logout = () => {
         localStorage.removeItem("token")
         setToken(null)
         setUser(null)
-        navigate("/login")
+        navigate("/")
     }
 
     useEffect(() => {

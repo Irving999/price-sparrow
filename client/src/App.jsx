@@ -6,6 +6,7 @@ import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Watches from "./pages/Watches"
 import Watch from "./pages/Watch"
+import Landing from "./pages/Landing"
 
 function App() {
   return (
@@ -13,9 +14,11 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route
-            path="/"
+            path="/dashboard"
             element={
-              <Dashboard />
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
             }
           />
           <Route
@@ -34,6 +37,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

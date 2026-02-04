@@ -13,7 +13,7 @@ export default function StoreMarquee() {
     if (stores.length === 0) return null
 
     return (
-        <div className="mt-24 w-screen overflow-hidden">
+        <div className="mb-12 w-screen overflow-hidden">
             <p className="text-center text-xs font-semibold text-slate-400 uppercase tracking-[0.2em] mb-8">
                 Supported Retailers
             </p>

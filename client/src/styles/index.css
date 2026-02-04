@@ -1,6 +1,5 @@
-@import "tailwindcss";
-
 @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
 
 body {
     font-family: "Raleway", sans-serif;
@@ -125,6 +124,32 @@ body {
 
 .glow:hover {
     text-shadow: 0 0 3px rgba(224, 205, 205, 0.7);
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0); 
+    }
+    100% {
+        transform: translateX(-50%); 
+    }
+}
+
+.animate-marquee-infinite {
+    display: flex;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+}
+
+/* Optional: Soften the edges so logos don't just "pop" into view */
+.mask-edges {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 10%,
+    black 90%,
+    transparent
+  );
 }
 
 .loading {

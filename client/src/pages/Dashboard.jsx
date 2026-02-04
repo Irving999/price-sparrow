@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import Navbar from "../components/Navbar"
 import { useAuth } from "../context/AuthContext"
 import AnimatedBackground from "../components/AnimatedBackground"
+import StoreMarquee from "../components/StoreMarquee"
 
 export default function Dashboard() {
     const [url, setUrl] = useState("")
@@ -60,7 +61,7 @@ export default function Dashboard() {
         <AnimatedBackground fromStart={true}>
             <div className="relative flex z-10 flex-1 flex-col items-center min-h-screen px-4 sm:px-6">
                 <Navbar />
-                <div className="my-24 sm:my-40 w-full max-w-3xl">
+                <div className="my-24 sm:mt-40 w-full max-w-3xl">
                     <h1 className="text-4xl sm:text-5xl md:text-6xl text-center mb-4 tracking-tight">
                         Get Notified When Prices Drop
                     </h1>
@@ -106,6 +107,7 @@ export default function Dashboard() {
                         {error && <p className="text-red-500 text-sm font-medium text-center animate-in fade-in duration-300">{error}</p>}
                     </div>
                 </div>
+                <StoreMarquee/>
             </div>
         </AnimatedBackground>
     )

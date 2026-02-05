@@ -43,7 +43,11 @@ const postRegister = async (req, res, next) => {
         
         res.status(201).json({
             message: 'User successfully created',
-            accessToken
+            user: {
+                id: newUser.id,
+                email: newUser.email
+            },
+            token: accessToken
         })
     } catch (err) {
         // Email already exists (unique constraint violation)

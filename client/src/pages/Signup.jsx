@@ -34,7 +34,7 @@ export default function SignUp() {
                 setError(data.error)
             }
         } catch (error) {
-            setError({ error: "Network error", success: "" })
+            setError("Network error")
         }
     }
 

@@ -11,7 +11,7 @@ export default function Watches() {
     useEffect(() => {
         async function getWatches() {
             try {
-                const response = await fetch("http://localhost:3000/api/me/watches", {
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/api/me/watches`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

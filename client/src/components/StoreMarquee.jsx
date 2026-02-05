@@ -4,7 +4,7 @@ export default function StoreMarquee() {
     const [stores, setStores] = useState([])
 
     useEffect(() => {
-        fetch("http://localhost:3000/api/stores")
+        fetch(`${import.meta.env.VITE_API_URL}/api/stores`)
             .then((res) => res.json())
             .then((data) => setStores(data))
             .catch((err) => console.error(err))

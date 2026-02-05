@@ -15,7 +15,7 @@ module.exports = scrape = async(url) => {
 
     let browser
     try {
-        browser = await chromium.launch({ headless: true })
+        browser = await chromium.launch({ headless: false })
 
         const context = await browser.newContext({
             userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -37,6 +37,20 @@ module.exports = scrape = async(url) => {
             return null
         }
 
+        const extractHighRes = async (img) => {
+            const srcset = await img.getAttribute('srcset') || await img.getAttribute('src')
+
+            if (!srcset) return null
+
+            // Split on a comma and whitespace only when a number follows
+            const parts = srcset.split(/,\s+(?=\d)/)
+
+            const last = parts[parts.length - 1].trim()
+
+            // Split wherever there is whitespace, no matter how much
+            return last.split(/\s+/)[0]
+        }
+
         const imageFinder = async (gallerySelector, imageSelector) => {
             const gallery = page.locator(gallerySelector)
             await gallery.waitFor({ state: 'visible', timeout: 5000 })
@@ -45,23 +59,18 @@ module.exports = scrape = async(url) => {
 
             const images = await page.locator(`${gallerySelector} ${imageSelector}`).all()
 
+            if (scroll) {
+                for (const img of images) {
+                // Scroll each image into view to trigger the lazy load
+                await img.scrollIntoViewIfNeeded()
+                await img.hover()
+            }
+            }
+
             const urls = await Promise.all(
-                images.map(async (img) => {
-                    const srcset = await img.getAttribute('srcset')
-                        || await img.getAttribute('src')
-
-                    if (!srcset) return null
-
-                    // Split on a comma and whitespace only when a number follows
-                    const parts = srcset.split(/,\s+(?=\d)/)
-                    
-                    const last = parts[parts.length - 1].trim()
-                    // Split wherever there is whitespace, no matter how much
-                    return last.split(/\s+/)[0]
-                })
+                images.map(async img => extractHighRes(img))
             )
-
-            return urls.filter(url => url !== null)
+            return [...new Set(urls.filter(url => url !== null))]
         }
 
         const outOfStock = await trySelectors(site.error)
@@ -81,13 +90,21 @@ module.exports = scrape = async(url) => {
         let price
         if (!outOfStock) {
             const priceRaw = await priceLoc.innerText()
-            // Delete everything that isn’t a digit, dot, or minus sign
-            price = Number(priceRaw.replace(/[^0-9.-]+/g, ""))
+    
+            // Find all sequences that look like numbers (e.g., 29.97 and 69.5)
+            const matches = priceRaw.match(/\d+(\.\d+)?/g)
+            
+            if (matches && matches.length > 0) {
+                // Parse the first match (the lower end of the range)
+                price = parseFloat(matches[0])
+            } else {
+                price = null;
+            }
         } else {
             price = null
         }
 
-        const imageUrls = await imageFinder(site.gallery, site.images)
+        const imageUrls = await imageFinder(site.gallery, site.images, site.noScroll || null)
 
         return {
             title,

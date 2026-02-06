@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "./context/AuthContext"
 import SignUp from "./pages/Signup"
 import Login from "./pages/Login"
-import Dashboard from "./pages/Dashboard"
 import NotFound from "./pages/NotFound"
 import ProtectedRoute from "./components/ProtectedRoute"
 import Watches from "./pages/Watches"
@@ -14,14 +13,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/dashboard" element={<Landing />} />
           <Route
             path="/my-watches"
             element={

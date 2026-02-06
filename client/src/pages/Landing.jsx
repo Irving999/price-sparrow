@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import AnimatedBackground from "../components/AnimatedBackground"
 import StoreMarquee from "../components/StoreMarquee"
 
-export default function Dashboard() {
+export default function Landing() {
     const [url, setUrl] = useState("")
     const [price, setPrice] = useState("")
     const [error, setError] = useState("")
@@ -14,8 +14,6 @@ export default function Dashboard() {
 
     const { token, isAuthenticated } = useAuth()
     const navigate = useNavigate()
-
-    console.log("visited")
 
     const handleSubmit = async (e) => {
         e.preventDefault()

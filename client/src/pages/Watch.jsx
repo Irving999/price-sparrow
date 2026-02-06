@@ -89,6 +89,30 @@ export default function Watch() {
         navigate(`/my-watches/${prevWatch.watchId}`)
     }
 
+    const handleDelete = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/me/watches/${watchId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+            const data = await response.json()
+
+            if (!response.ok) {
+                setError(data.message)
+                return
+            }
+
+            setError("")
+            navigate("/my-watches")
+        } catch (error) {
+            console.error("Server error", error)
+            setError("Server error")
+        }
+    }
+
     const lastCheckedAt = watch ? new Date(watch.product.lastCheckedAt) : null
 
     if (error && !watch) {
@@ -133,11 +157,17 @@ export default function Watch() {
                 {watch && (
                     <div className="mx-24 my-8">
                         <ImageCarousel key={watch.watchId} title={watch.product.title} images={watch.productImages}/>
-                        <p className="block w-fit ml-auto hover:underline hover:underline-offset">
-                            <a href={watch.product.url} target="_blank" rel="noopener noreferrer">
+                        <div className="flex gap-4 w-fit ml-auto">
+                            <a href={watch.product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:underline-offset">
                                 View product
                             </a>
-                        </p>
+                            <button 
+                                className="rounded-full text-red-500 cursor-pointer hover:underline hover:underline-offset"
+                                onClick={handleDelete}
+                                >
+                                Stop Watching
+                            </button>
+                        </div>
                         <h1 className="font-semibold mt-4 text-2xl text-slate-900">{watch.product.title}</h1>
                         <div className="pl-4">
                             <div className="flex flex-col ">
@@ -152,6 +182,7 @@ export default function Watch() {
                                             This product is currently
                                             <strong className="text-red-600"> out of stock</strong>
                                         </span>
+                                        
                                     )}
                                     <p>
                                         You're waiting for the product to drop to

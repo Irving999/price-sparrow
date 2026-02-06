@@ -42,6 +42,7 @@ const getMe = async (req, res, next) => {
 
 const getWatch = async (req, res, next) => {
     try {
+        const userId = req.userId
         const id = Number(req.params.watchId)
 
         const { rows } = await pool.query(
@@ -75,9 +76,9 @@ const getWatch = async (req, res, next) => {
                 ) AS "productHistory"
              FROM watches w
              JOIN products p ON p.id = w.product_id
-             WHERE w.id = $1
+             WHERE w.id = $1 AND w.user_id = $2
             `,
-            [id]
+            [id, userId]
         )
 
         if (rows.length === 0) {
@@ -156,7 +157,7 @@ const postWatches = async (req, res, next) => {
         )
         
         let product
-        if (productResult.rows.length !== 0) {
+        if (productResult.rows.length === 0) {
             const existing = await client.query(
                 `SELECT id, url, title, current_price, last_checked_at
                  FROM products
@@ -164,6 +165,8 @@ const postWatches = async (req, res, next) => {
                 [url]
             )
             product = existing.rows[0]
+        } else {
+            product = productResult.rows[0]
             try {
                 const { title, price, currency, images } = await scraper(product.url)
                 await updateProductPrice({
@@ -177,8 +180,6 @@ const postWatches = async (req, res, next) => {
             } catch (error) {
                 console.error(`Error checking product ${product.id}:`, error)
             }
-        } else {
-            product = productResult.rows[0]
         }
 
         const watchResult = await client.query(

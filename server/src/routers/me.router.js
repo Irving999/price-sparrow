@@ -7,6 +7,7 @@ router.get('/', requireAuth, controller.getMe)
 router.get('/watches/:watchId', requireAuth, controller.getWatch)
 router.get('/watches', requireAuth, controller.getWatches)
 router.post('/watches', requireAuth, controller.postWatches)
+router.patch('/watches/:watchId', requireAuth, controller.updateWatch)
 router.delete('/watches/:watchId', requireAuth, controller.deleteWatch)
 
 module.exports = router

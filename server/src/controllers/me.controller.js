@@ -249,10 +249,46 @@ const deleteWatch = async (req, res, next) => {
     }
 }
 
+const updateWatch = async (req, res, next) => {
+    try {
+        const userId = req.userId
+        const watchId = Number(req.params.watchId)
+        const { targetPrice } = req.body
+
+        if (!Number.isInteger(watchId) || watchId <= 0) {
+            return res.status(400).json({ error: "Invalid watchId." })
+        }
+
+        if (targetPrice === undefined || targetPrice === null) {
+            return res.status(400).json({ error: "targetPrice is required." })
+        }
+
+        const num = Number(targetPrice)
+        if (!Number.isFinite(num) || num < 0) {
+            return res.status(400).json({ error: "targetPrice must be a non-negative number." })
+        }
+
+        const { rows, rowCount } = await pool.query(
+            `UPDATE watches
+            SET target_price = $1
+            WHERE id = $2 AND user_id = $3
+            RETURNING id AS "watchId", target_price AS "targetPrice"`,
+            [num, watchId, userId]
+        )
+
+        if (!rowCount) return res.status(404).json({ error: "Watch not found" })
+
+        res.json(rows[0])
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports = {
     getWatch,
     getWatches,
     postWatches,
+    updateWatch,
     deleteWatch,
     getMe
 }

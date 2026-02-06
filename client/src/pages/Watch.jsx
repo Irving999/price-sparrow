@@ -10,6 +10,8 @@ export default function Watch() {
     const [watches, setWatches] = useState([])
     const [watch, setWatch] = useState(null)
     const [error, setError] = useState("")
+    const [editing, setEditing] = useState(false)
+    const [editPrice, setEditPrice] = useState("")
 
     const { watchId } = useParams()
     const navigate = useNavigate()
@@ -89,6 +91,38 @@ export default function Watch() {
         navigate(`/my-watches/${prevWatch.watchId}`)
     }
 
+    const handleEdit = async () => {
+        const num = Number(editPrice)
+        if (!Number.isFinite(num) || num < 0) {
+            setError("Target price must be a non-negative number")
+            return
+        }
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/me/watches/${watchId}`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ targetPrice: num })
+            })
+            const data = await response.json()
+
+            if (!response.ok) {
+                setError(data.error)
+                return
+            }
+
+            setWatch(prev => ({ ...prev, targetPrice: data.targetPrice }))
+            setEditing(false)
+            setError("")
+        } catch (error) {
+            console.error("Server error", error)
+            setError("Server error")
+        }
+    }
+
     const handleDelete = async () => {
         try {
             const response = await fetch(`${import.meta.env.VITE_API_URL}/api/me/watches/${watchId}`, {
@@ -162,7 +196,7 @@ export default function Watch() {
                                 View product
                             </a>
                             <button 
-                                className="rounded-full text-red-500 cursor-pointer hover:underline hover:underline-offset"
+                                className="rounded-full text-red-500 cursor-pointer hover:text-red-700"
                                 onClick={handleDelete}
                                 >
                                 Stop Watching
@@ -184,11 +218,45 @@ export default function Watch() {
                                         </span>
                                         
                                     )}
-                                    <p>
-                                        You're waiting for the product to drop to
-                                        <strong> ${watch.targetPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })} </strong>
-                                        or less
-                                    </p>
+                                    {editing ? (
+                                        <div className="flex items-center gap-2 my-1">
+                                            <span>Target price: $</span>
+                                            <input
+                                                type="number"
+                                                value={editPrice}
+                                                onChange={(e) => setEditPrice(e.target.value)}
+                                                className="w-28 px-2 py-1 rounded-lg border border-gray-300 focus:ring-2 focus:ring-sky-500/50 outline-none"
+                                                autoFocus
+                                            />
+                                            <button
+                                                onClick={handleEdit}
+                                                className="text-sm text-white bg-sky-500 hover:bg-sky-700 px-3 py-1 rounded-lg cursor-pointer transition-colors"
+                                            >
+                                                Save
+                                            </button>
+                                            <button
+                                                onClick={() => { 
+                                                    setEditing(false)
+                                                    setError("")
+                                                }}
+                                                className="text-sm text-slate-500 hover:text-slate-700 cursor-pointer"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <p>
+                                            You're waiting for the product to drop to
+                                            <strong> ${watch.targetPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })} </strong>
+                                            or less
+                                            <button
+                                                onClick={() => { setEditing(true); setEditPrice(watch.targetPrice) }}
+                                                className="ml-2 text-sm text-sky-500 hover:text-sky-700 cursor-pointer hover:underline hover:underline-offset"
+                                            >
+                                                Edit
+                                            </button>
+                                        </p>
+                                    )}
                                     <p>
                                         This product was last checked on{" "}
                                         <strong>

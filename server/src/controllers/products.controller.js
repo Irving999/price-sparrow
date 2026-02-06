@@ -1,6 +1,7 @@
 const scraper = require('../services/scraper')
 const pool = require('../../db')
-const { updateProductPrice } = require('../services/product.service')
+const updateProductPrice = require('../services/product.service')
+const { sendPriceAlert } = require('../services/email.service')
 
 const getProduct = async (req, res, next) => {
     try {
@@ -81,6 +82,28 @@ const updatePrice = async (req, res, next) => {
         }
         
         const data = await updateProductPrice({ productId, title, price, currency })
+
+        if (data.matchesCount > 0) {
+            const { rows: watches } = await pool.query(
+                `SELECT u.email, w.target_price AS "targetPrice", p.title, p.url, p.current_price AS "currentPrice"
+                FROM watches w
+                JOIN users u ON u.id = w.user_id
+                JOIN products p ON p.id = w.product_id
+                WHERE w.id = ANY($1)`,
+                [data.alertedWatches]
+            )
+
+            for (const watch of watches) {
+                sendPriceAlert({
+                    to: watch.email,
+                    productTitle: watch.title,
+                    productUrl: watch.url,
+                    currentPrice: watch.currentPrice,
+                    targetPrice: watch.targetPrice
+                }).catch(err => console.error(`Failed to send email to ${watch.email}:`, err.message))
+            }
+        }
+
         res.json(data)
     } catch (err) {
         next(err)

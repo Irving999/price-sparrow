@@ -15,7 +15,7 @@ module.exports = scrape = async(url) => {
 
     let browser
     try {
-        browser = await chromium.launch({ headless: false })
+        browser = await chromium.launch({ headless: true })
 
         const context = await browser.newContext({
             userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -51,7 +51,7 @@ module.exports = scrape = async(url) => {
             return last.split(/\s+/)[0]
         }
 
-        const imageFinder = async (gallerySelector, imageSelector) => {
+        const imageFinder = async (gallerySelector, imageSelector, noScroll) => {
             const gallery = page.locator(gallerySelector)
             await gallery.waitFor({ state: 'visible', timeout: 5000 })
             await gallery.scrollIntoViewIfNeeded()
@@ -59,12 +59,12 @@ module.exports = scrape = async(url) => {
 
             const images = await page.locator(`${gallerySelector} ${imageSelector}`).all()
 
-            if (scroll) {
+            if (!noScroll) {
                 for (const img of images) {
                 // Scroll each image into view to trigger the lazy load
                 await img.scrollIntoViewIfNeeded()
                 await img.hover()
-            }
+                }
             }
 
             const urls = await Promise.all(

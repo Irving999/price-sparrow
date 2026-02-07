@@ -1,7 +1,6 @@
 import { useState } from "react"
 import Navbar from "../components/Navbar"
 import { useAuth } from "../context/AuthContext"
-import { useNavigate } from "react-router-dom";
 import AnimatedBackground from "../components/AnimatedBackground"
 import StoreMarquee from "../components/StoreMarquee"
 
@@ -12,8 +11,7 @@ export default function Landing() {
     const [success, setSuccess] = useState("")
     const [submitLoading, setSubmitLoading] = useState(false)
 
-    const { token, isAuthenticated, openLoginModal } = useAuth()
-    const navigate = useNavigate()
+    const { token, isAuthenticated, openLoginModal, openSignupModal } = useAuth()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -119,7 +117,7 @@ export default function Landing() {
                             </p>
                             <div className="flex gap-2 items-center justify-center">
                                 <button
-                                    onClick={() => navigate("/signup")}
+                                    onClick={openSignupModal}
                                     className="text-sky-600 hover:text-sky-700 font-medium underline underline-offset-4 transition-colors"
                                 >
                                     Sign up for free

@@ -9,10 +9,13 @@ export function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
     const [loading, setLoading] = useState(true)
     const [showLoginModal, setShowLoginModal] = useState(false)
+    const [showSignupModal, setShowSignupModal] = useState(false)
     const navigate = useNavigate()
 
     const openLoginModal = () => setShowLoginModal(true)
     const closeLoginModal = () => setShowLoginModal(false)
+    const openSignupModal = () => setShowSignupModal(true)
+    const closeSignupModal = () => setShowSignupModal(false)
 
     const login = (newToken, user) => {
         localStorage.setItem("token", newToken)
@@ -87,7 +90,7 @@ export function AuthProvider({ children }) {
     const isAuthenticated = !!token && !!user
 
     return (
-        <AuthContext.Provider value={{ user, token, loading, login, logout, isAuthenticated, showLoginModal, openLoginModal, closeLoginModal }}>
+        <AuthContext.Provider value={{ user, token, loading, login, logout, isAuthenticated, showLoginModal, openLoginModal, closeLoginModal, showSignupModal, openSignupModal, closeSignupModal }}>
             {children}
         </AuthContext.Provider>
     )

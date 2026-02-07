@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false)
-    const { logout, isAuthenticated, loading } = useAuth()
+    const { logout, isAuthenticated, loading, openLoginModal } = useAuth()
 
     // Prevent scrolling when dropdown is open
     useEffect(() => {
@@ -74,9 +74,9 @@ export default function Navbar() {
                                     Logout
                                 </button>
                             ) : (
-                                <Link to="/login" className="nav-bullet rounded-md cursor-pointer ${}">
+                                <button type="button" onClick={openLoginModal} className="nav-bullet rounded-md cursor-pointer">
                                     Login
-                                </Link>
+                                </button>
                             )
                         }
                     </li>
@@ -102,9 +102,9 @@ export default function Navbar() {
                                     Logout
                                 </button>
                             ) : (
-                                <Link to="/login" className="glow block">
+                                <button type="button" onClick={() => { setIsOpen(false); openLoginModal(); }} className="glow block w-full">
                                     Login
-                                </Link>
+                                </button>
                             )
                         }
                     </li>

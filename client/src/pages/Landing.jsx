@@ -12,14 +12,14 @@ export default function Landing() {
     const [success, setSuccess] = useState("")
     const [submitLoading, setSubmitLoading] = useState(false)
 
-    const { token, isAuthenticated } = useAuth()
+    const { token, isAuthenticated, openLoginModal } = useAuth()
     const navigate = useNavigate()
 
     const handleSubmit = async (e) => {
         e.preventDefault()
 
         if (!isAuthenticated) {
-            navigate("/login")
+            openLoginModal()
             return
         }
 
@@ -126,7 +126,7 @@ export default function Landing() {
                                 </button>
                                 <span className="text-slate-400">or</span>
                                 <button
-                                    onClick={() => navigate("/login")}
+                                    onClick={openLoginModal}
                                     className="text-sky-600 hover:text-sky-700 font-medium underline underline-offset-4 transition-colors"
                                 >
                                     Log in

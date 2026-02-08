@@ -1,5 +1,6 @@
 const pool = require('../../db')
 const scraper = require('../services/scraper')
+const sites = require('../services/sites')
 const updateProductPrice = require('../services/product.service')
 
 function isValidUrl(str) {
@@ -140,6 +141,11 @@ const postWatches = async (req, res, next) => {
             if (!Number.isFinite(num) || num < 0) {
                 return res.status(400).json({ error: `'targetPrice' must be a non-negative number.` })
             }
+        }
+
+        const isSupportedSite = Object.keys(sites).some(key => url.includes(key))
+        if (!isSupportedSite) {
+            return res.status(400).json({ error: 'This site is not supported yet' })
         }
 
         // Starts transaction

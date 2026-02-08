@@ -91,12 +91,11 @@ module.exports = scrape = async(url) => {
         if (!outOfStock) {
             const priceRaw = await priceLoc.innerText()
     
-            // Find all sequences that look like numbers (e.g., 29.97 and 69.5)
-            const matches = priceRaw.match(/\d+(\.\d+)?/g)
-            
+            // Find all sequences that look like prices, including commas (e.g., 1,299.97)
+            const matches = priceRaw.match(/\d[\d,]*(\.\d+)?/g)
+
             if (matches && matches.length > 0) {
-                // Parse the first match (the lower end of the range)
-                price = parseFloat(matches[0])
+                price = parseFloat(matches[0].replace(/,/g, ''))
             } else {
                 price = null;
             }

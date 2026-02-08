@@ -23,20 +23,12 @@ ChartJS.register(
     Filler
 )
 
-const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-    })
-}
-
 export default function PriceChart({ priceData }) {
-    if (!priceData || priceData.length === 0) {
+    if (!priceData || priceData.length <= 1) {
         return (
             <div className="mt-6 p-6 bg-gray-50 rounded-lg text-center">
                 <p className="text-gray-500">
-                    No price history yet. Check back after your first price check!
+                    Not enough price history yet. A chart will appear after more price checks.
                 </p>
             </div>
         )

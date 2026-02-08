@@ -3,6 +3,28 @@ const scraper = require('../services/scraper')
 const sites = require('../services/sites')
 const updateProductPrice = require('../services/product.service')
 
+// Rate limit tracking for new product scrapes only
+const scrapeTracker = new Map()
+const SCRAPE_WINDOW_MS = 15 * 60 * 1000
+const SCRAPE_MAX = 5
+
+function checkScrapeLimit(userId) {
+    const now = Date.now()
+    let record = scrapeTracker.get(userId)
+
+    if (!record || now > record.resetTime) {
+        record = { count: 0, resetTime: now + SCRAPE_WINDOW_MS }
+        scrapeTracker.set(userId, record)
+    }
+
+    if (record.count >= SCRAPE_MAX) {
+        return false
+    }
+
+    record.count++
+    return true
+}
+
 function isValidUrl(str) {
     try {
         const u = new URL(str)
@@ -173,6 +195,10 @@ const postWatches = async (req, res, next) => {
             product = existing.rows[0]
         } else {
             product = productResult.rows[0]
+            if (!checkScrapeLimit(userId)) {
+                await client.query('ROLLBACK')
+                return res.status(429).json({ error: 'Too many products added, please try again in 15 minutes' })
+            }
             try {
                 const { title, price, currency, images } = await scraper(product.url)
                 await updateProductPrice({

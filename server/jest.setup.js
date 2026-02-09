@@ -1,0 +1,5 @@
+process.env.JWT_SECRET = 'test-secret-for-jest'
+process.env.JWT_EXPIRES_IN = '1h'
+process.env.POSTMARK_API_KEY = 'fake-key'
+process.env.FROM_EMAIL = 'test@example.com'
+process.env.CORS_ORIGIN = 'http://localhost:5173'

@@ -65,14 +65,7 @@ export default function Landing() {
     return (
         <div className="relative flex z-10 flex-1 flex-col justify-between items-center min-h-screen px-4 sm:px-6">
             {!loading && isAuthenticated && (
-                <motion.div
-                    className="w-full"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Navbar />
-                </motion.div>
+                <Navbar />
             )}
         
             <motion.div

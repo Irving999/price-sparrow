@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { motion } from "framer-motion"
 import Navbar from "../components/Navbar"
 import ImageCarousel from "../components/ImageCarousel"
 import PriceChart from "../components/PriceChart"
 import { useAuth } from "../context/AuthContext"
-import AnimatedBackground from "../components/AnimatedBackground"
 
 export default function Watch() {
     const [watches, setWatches] = useState([])
@@ -151,20 +151,25 @@ export default function Watch() {
 
     if (error && !watch) {
         return (
-            <>
+            <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 bg-[length:200%_200%] animate-subtle-shift">
                 <Navbar />
                 <div className="relative flex justify-center items-center min-h-screen">
                     <p className="text-red-500 text-lg">{error}</p>
                 </div>
-            </>
+            </div>
         )
     }
 
     return (
-        <AnimatedBackground animated={false}>
+        <div className="min-h-screen animate-subtle-shift">
             <div className="relative z-10 flex min-h-screen flex-col">
                 <Navbar />
-                <div className="flex justify-between mx-12 mt-18">
+                <motion.div
+                    className="flex justify-between mx-12 mt-18"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1 }}
+                >
                     <button
                         onClick={handlePrev}
                         disabled={watches.findIndex(w => String(w.watchId) === watchId) <= 0}
@@ -187,23 +192,51 @@ export default function Watch() {
                     >
                         Next →
                     </button>
-                </div>
+                </motion.div>
                 {watch && (
-                    <div className="mx-24 my-8">
-                        <ImageCarousel key={watch.watchId} title={watch.product.title} images={watch.productImages}/>
-                        <div className="flex gap-4 w-fit ml-auto">
-                            <a href={watch.product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:underline-offset">
+                    <motion.div
+                        className="mx-24 my-8"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5, delay: 0.3 }}
+                        >
+                            <ImageCarousel key={watch.watchId} title={watch.product.title} images={watch.productImages}/>
+                        </motion.div>
+                        <motion.div
+                            className="flex gap-4 w-fit ml-auto"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                        >
+                            <a href={watch.product.url} target="_blank" rel="noopener noreferrer" className="hover:underline hover:underline-offset transition-all">
                                 View product
                             </a>
-                            <button 
-                                className="rounded-full text-red-500 cursor-pointer hover:text-red-700"
+                            <button
+                                className="rounded-full text-red-500 cursor-pointer hover:text-red-700 transition-colors"
                                 onClick={handleDelete}
                                 >
                                 Stop Watching
                             </button>
-                        </div>
-                        <h1 className="font-semibold mt-4 text-2xl text-slate-900">{watch.product.title}</h1>
-                        <div className="pl-4">
+                        </motion.div>
+                        <motion.h1
+                            className="font-semibold mt-4 text-2xl text-slate-900"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.5 }}
+                        >
+                            {watch.product.title}
+                        </motion.h1>
+                        <motion.div
+                            className="pl-4"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.6 }}
+                        >
                             <div className="flex flex-col ">
                                 <div className="flex-1">
                                     {watch.product.currentPrice ? (
@@ -272,13 +305,17 @@ export default function Watch() {
                                     </p>
                                 </div>
                             </div>
-                            <div>
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.7 }}
+                            >
                                 <PriceChart priceData={watch.productHistory} />
-                            </div>
-                        </div>
-                    </div>
+                            </motion.div>
+                        </motion.div>
+                    </motion.div>
                 )}
             </div>
-        </AnimatedBackground>
+        </div>
     )
 }

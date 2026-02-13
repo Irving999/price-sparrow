@@ -36,13 +36,7 @@ export default function Watches() {
     return (
         <div className="min-h-screen animate-subtle-shift">
             <div className="relative z-10 min-h-screen flex flex-col">
-                <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Navbar />
-                </motion.div>
+                 <Navbar />
                 {watches === null ? (
                     <div className="flex flex-1 items-center justify-center">
                         <div className="loading"></div>

@@ -7,7 +7,7 @@ import PriceChart from "../components/PriceChart"
 import { useAuth } from "../context/AuthContext"
 
 export default function Watch() {
-    const [watches, setWatches] = useState([])
+    const [watches, setWatches] = useState(null)
     const [watch, setWatch] = useState(null)
     const [error, setError] = useState("")
     const [editing, setEditing] = useState(false)
@@ -172,9 +172,9 @@ export default function Watch() {
                 >
                     <button
                         onClick={handlePrev}
-                        disabled={watches.findIndex(w => String(w.watchId) === watchId) <= 0}
+                        disabled={watches && watches.findIndex(w => String(w.watchId) === watchId) <= 0}
                         className={`px-4 py-2 rounded-lg font-semibold transition-colors hover:bg-gray-300 duration-200
-                            ${watches.findIndex(w => String(w.watchId) === watchId) <= 0
+                            ${watches && watches.findIndex(w => String(w.watchId) === watchId) <= 0
                                 ? "cursor-not-allowed"
                                 : "cursor-pointer"}`
                             }
@@ -183,9 +183,9 @@ export default function Watch() {
                     </button>
                     <button
                         onClick={handleNext}
-                        disabled={watches.findIndex(w => String(w.watchId) === watchId) === watches.length - 1}
+                        disabled={watches && watches.findIndex(w => String(w.watchId) === watchId) === watches.length - 1}
                         className={`px-4 py-2 rounded-lg font-semibold transition-colors duration-200 hover:bg-gray-300
-                            ${watches.findIndex(w => String(w.watchId) === watchId) === watches.length - 1
+                            ${watches && watches.findIndex(w => String(w.watchId) === watchId) === watches.length - 1
                                 ? "cursor-not-allowed"
                                 : "cursor-pointer"}`
                             }
@@ -193,7 +193,7 @@ export default function Watch() {
                         Next →
                     </button>
                 </motion.div>
-                {watch && (
+                {watch ? (
                     <motion.div
                         className="mx-24 my-8"
                         initial={{ opacity: 0, y: 20 }}
@@ -314,6 +314,10 @@ export default function Watch() {
                             </motion.div>
                         </motion.div>
                     </motion.div>
+                ) : (
+                    <div className="flex flex-1 items-center justify-center">
+                        <div className="loading"></div>
+                    </div>
                 )}
             </div>
         </div>

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "../context/AuthContext"
 
 export default function SignupModal() {
+    const [submitting, setSubmitting] = useState(false)
     const [formInput, setFormInput] = useState({ email: "", password: "" })
     const [error, setError] = useState("")
     const { login, showSignupModal, closeSignupModal } = useAuth()
@@ -41,6 +42,7 @@ export default function SignupModal() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError("")
+        setSubmitting(true)
 
         try {
             const res = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/register`, {
@@ -58,6 +60,8 @@ export default function SignupModal() {
             }
         } catch (error) {
             setError("Network error")
+        } finally {
+            setSubmitting(false)
         }
     }
 
@@ -144,14 +148,19 @@ export default function SignupModal() {
                                 />
                             </motion.label>
                             <motion.button
-                                className="text-white bg-black hover:bg-sky-700 py-1 px-3 rounded-xl cursor-pointer transition-colors"
+                                className="w-full font-thin sm:w-auto text-white bg-[#252529] border-1 border-transparent hover:bg-transparent hover:border-1 hover:text-black hover:border-black py-2 sm:py-1 px-4 sm:px-3 rounded-xl cursor-pointer transition-colors duration-200 font-medium"
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.25, duration: 0.3 }}
-                                whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                Submit
+                                {submitting ? (
+                                    <div>
+                                        <span className="dot-bounce"></span>
+                                        <span className="dot-bounce"></span>
+                                        <span className="dot-bounce"></span>
+                                    </div>
+                                ) : "Submit"}
                             </motion.button>
                         </form>
                     </motion.div>

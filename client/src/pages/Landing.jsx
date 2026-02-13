@@ -123,7 +123,15 @@ export default function Landing() {
                             type="submit"
                             disabled={submitLoading}
                         >
-                            {submitLoading ? "Adding..." : "Add Product"}
+                            {submitLoading ? (
+                                <span className="flex items-center justify-center gap-1">
+                                    <span className="dot-bounce"></span>
+                                    <span className="dot-bounce"></span>
+                                    <span className="dot-bounce"></span>
+                                </span>
+                            ) : (
+                                "Add Product"
+                            )}
                         </button>
                     </form>
                 </motion.div>

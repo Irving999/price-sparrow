@@ -211,6 +211,8 @@ const postWatches = async (req, res, next) => {
                 })
             } catch (error) {
                 console.error(`Error checking product ${product.id}:`, error)
+                await client.query('ROLLBACK')
+                return res.status(500).json({ error: 'Failed to scrape product information. Please try again later.' })
             }
         }
 

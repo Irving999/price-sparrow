@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "../context/AuthContext"
 
 export default function LoginModal() {
@@ -61,32 +62,71 @@ export default function LoginModal() {
         }
     }
 
-    if (!showLoginModal) return null
-
     return (
-        <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
-            onClick={closeLoginModal}
-        >
-            <div
-                className="relative flex flex-col items-center bg-white rounded-xl p-10 shadow-2xl"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <button
+        <AnimatePresence>
+            {showLoginModal && (
+                <motion.div
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50"
                     onClick={closeLoginModal}
-                    className="absolute top-3 right-3 text-slate-400 hover:text-slate-600 cursor-pointer"
-                    aria-label="Close"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
                 >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+                    <motion.div
+                        className="relative flex flex-col items-center bg-white rounded-xl p-10 shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                    >
+                        <button
+                            onClick={closeLoginModal}
+                            className="absolute top-3 right-3 text-slate-400 hover:text-slate-600 cursor-pointer transition-colors"
+                            aria-label="Close"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
 
-                <h1 className="font-semibold mb-5 text-2xl text-slate-900">Log in</h1>
-                {message.error && <p className="text-red-500">{message.error}</p>}
-                {message.success && <p className="text-green-500">{message.success}</p>}
-                <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3">
-                    <label htmlFor="modal-email" className="flex flex-col gap-2">
+                        <motion.h1
+                            className="font-semibold mb-5 text-2xl text-slate-900"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1, duration: 0.3 }}
+                        >
+                            Log in
+                        </motion.h1>
+                        {message.error && (
+                            <motion.p
+                                className="text-red-500"
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                {message.error}
+                            </motion.p>
+                        )}
+                        {message.success && (
+                            <motion.p
+                                className="text-green-500"
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.2 }}
+                            >
+                                {message.success}
+                            </motion.p>
+                        )}
+                        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-3">
+                    <motion.label
+                        htmlFor="modal-email"
+                        className="flex flex-col gap-2"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.15, duration: 0.3 }}
+                    >
                         Email
                         <input
                             type="text"
@@ -96,8 +136,14 @@ export default function LoginModal() {
                             onChange={handleChange}
                             className="px-3 py-1 rounded-xl border-transparent focus:ring focus:ring-sky-500 focus:ring-opacity-50 focus:ring-2 shadow-lg outline outline-black/5"
                         />
-                    </label>
-                    <label htmlFor="modal-password" className="flex flex-col gap-2">
+                    </motion.label>
+                    <motion.label
+                        htmlFor="modal-password"
+                        className="flex flex-col gap-2"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
+                    >
                         Password
                         <input
                             type="password"
@@ -107,12 +153,21 @@ export default function LoginModal() {
                             onChange={handleChange}
                             className="px-3 py-1 rounded-xl border-transparent focus:ring focus:ring-sky-500 focus:ring-opacity-50 focus:ring-2 shadow-lg outline outline-black/5"
                         />
-                    </label>
-                    <button className="text-white bg-black hover:bg-sky-700 py-1 px-3 rounded-xl cursor-pointer">
+                    </motion.label>
+                    <motion.button
+                        className="text-white bg-black hover:bg-sky-700 py-1 px-3 rounded-xl cursor-pointer transition-colors"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2, duration: 0.3 }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                    >
                         Submit
-                    </button>
+                    </motion.button>
                 </form>
-            </div>
-        </div>
+                    </motion.div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     )
 }

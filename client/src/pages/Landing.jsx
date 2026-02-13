@@ -14,6 +14,7 @@ export default function Landing() {
     const { token, isAuthenticated, loading, openLoginModal, openSignupModal } = useAuth()
 
     const handleSubmit = async (e) => {
+        setError("")
         e.preventDefault()
 
         if (!isAuthenticated) {
